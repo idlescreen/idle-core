@@ -1,0 +1,14 @@
+[workspace]
+resolver = "2"
+members = [
+    "screensaver-api",
+    "screensaver-runner",
+    "trance",
+]
+
+[profile.release]
+opt-level = "z"          # Optimize for size
+lto = true               # Enable Link Time Optimization
+codegen-units = 1        # Reduce codegen units to maximize size reduction
+panic = "abort"          # Remove panic unwinding code
+strip = true             # Strip symbols and debuginfo

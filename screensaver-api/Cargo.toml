@@ -1,0 +1,8 @@
+[package]
+name = "screensaver-api"
+version = "2026.6.14-2"
+edition = "2021"
+description = "Lightweight shared API definitions, traits, and math utilities for terminal screensaver plugins."
+license = "MIT"
+
+[dependencies]
