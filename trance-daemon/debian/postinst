@@ -1,0 +1,10 @@
+#!/bin/sh
+# postinst script for trance-daemon
+set -e
+
+if [ "$1" = "configure" ]; then
+    # Enable the service globally for all user sessions so it runs automatically on login
+    systemctl --global enable trance-daemon.service || true
+fi
+
+exit 0

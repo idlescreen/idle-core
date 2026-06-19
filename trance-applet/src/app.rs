@@ -40,8 +40,9 @@ pub enum Message {
     ToggleIdleEnabled(bool),
     ActiveSaverSelected(String),
     LockNow,
-    OpenConfigurator,
     ToggleDaemon(bool),
+    DecreaseTimeout,
+    IncreaseTimeout,
 }
 
 impl AppModel {
@@ -162,11 +163,29 @@ impl cosmic::Application for AppModel {
             opts
         };
         let selected = Some(self.local_config.active_saver.clone().unwrap_or_else(|| "Random".to_string()));
-        let pick_list = cosmic::iced::widget::pick_list(
-            options,
-            selected,
-            Message::ActiveSaverSelected,
-        );
+
+        let mut grid = cosmic::iced::widget::Column::new().spacing(6);
+        let mut row = cosmic::iced::widget::Row::new().spacing(6);
+        let len = options.len();
+        for (i, s) in options.into_iter().enumerate() {
+            let is_selected = selected.as_ref() == Some(&s);
+            let btn = if is_selected {
+                widget::button::suggested(s.clone())
+            } else {
+                widget::button::standard(s.clone())
+            };
+            let btn = btn
+                .width(cosmic::iced::Length::Fill)
+                .on_press(Message::ActiveSaverSelected(s));
+            row = row.push(btn);
+            if i % 2 == 1 {
+                grid = grid.push(row);
+                row = cosmic::iced::widget::Row::new().spacing(6);
+            }
+        }
+        if len % 2 != 0 {
+            grid = grid.push(row);
+        }
 
         let daemon_status = if self.daemon_running {
             "Daemon: Active"
@@ -179,10 +198,20 @@ impl cosmic::Application for AppModel {
             .push(widget::text("Trance Screensaver").size(16))
             .push(widget::text(daemon_status).size(12));
 
+        let decrease_btn = widget::button::standard("-").on_press(Message::DecreaseTimeout);
+        let increase_btn = widget::button::standard("+").on_press(Message::IncreaseTimeout);
+        let timeout_val = widget::text(format!("{} mins", self.local_config.idle_timeout_mins));
+
+        let timeout_adjuster = cosmic::iced::widget::Row::new()
+            .spacing(8)
+            .align_y(cosmic::iced::Alignment::Center)
+            .push(decrease_btn)
+            .push(timeout_val)
+            .push(increase_btn);
+
         let actions = cosmic::iced::widget::Row::new()
             .spacing(8)
-            .push(widget::button::suggested("Lock Now").on_press(Message::LockNow))
-            .push(widget::button::standard("Open Configurator").on_press(Message::OpenConfigurator));
+            .push(widget::button::suggested("Lock Now").on_press(Message::LockNow));
 
         let content_list = widget::list_column()
             .add(header)
@@ -195,9 +224,11 @@ impl cosmic::Application for AppModel {
                 widget::toggler(self.local_config.idle_enabled).on_toggle(Message::ToggleIdleEnabled),
             ))
             .add(widget::settings::item(
-                "Active Screensaver",
-                pick_list,
+                "Idle Timeout",
+                timeout_adjuster,
             ))
+            .add(widget::text("Active Screensaver").size(14))
+            .add(grid)
             .add(actions);
 
         self.core.applet.popup_container(content_list).into()
@@ -282,10 +313,17 @@ impl cosmic::Application for AppModel {
                         .spawn();
                 }
             }
-            Message::OpenConfigurator => {
-                let _ = std::process::Command::new("xterm")
-                    .args(["-bg", "black", "-fg", "white", "-T", "Trance", "-geometry", "135x40", "-e", "trance"])
-                    .spawn();
+            Message::DecreaseTimeout => {
+                if self.local_config.idle_timeout_mins > 1 {
+                    self.local_config.idle_timeout_mins -= 1;
+                    let _ = self.local_config.save();
+                }
+            }
+            Message::IncreaseTimeout => {
+                if self.local_config.idle_timeout_mins < 120 {
+                    self.local_config.idle_timeout_mins += 1;
+                    let _ = self.local_config.save();
+                }
             }
             Message::TogglePopup => {
                 return if let Some(p) = self.popup.take() {

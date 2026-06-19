@@ -1,0 +1,10 @@
+#!/bin/sh
+# prerm script for trance-daemon
+set -e
+
+if [ "$1" = "remove" ]; then
+    # Disable the user service globally
+    systemctl --global disable trance-daemon.service || true
+fi
+
+exit 0
