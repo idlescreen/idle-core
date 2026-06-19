@@ -18,10 +18,11 @@ libc = "0.2"
 directories = "5"
 
 [package.metadata.deb]
-name = "trance-tui"
+name = "trance"
 maintainer = "Screensavers Developer <dev@local76.org>"
-extended-description = "Interactive TUI configuration manager for trance screensavers."
-depends = "libc6, xterm"
+extended-description = "Interactive TUI configuration manager and idle background daemon for trance screensavers."
+depends = "libc6, xterm, trance-daemon"
+recommends = "trance-applet"
 section = "utils"
 priority = "optional"
 assets = [
@@ -31,12 +32,12 @@ assets = [
 ]
 
 [package.metadata.generate-rpm]
-name = "trance-tui"
+name = "trance"
 version = "0.1.1"
 release = "1"
 arch = "x86_64"
-summary = "trance-tui - Interactive TUI configuration manager for trance screensavers"
-description = "Interactive TUI configuration manager for trance screensavers."
+summary = "trance - Interactive TUI configuration manager and idle background daemon for trance screensavers"
+description = "Interactive TUI configuration manager and idle background daemon for trance screensavers."
 license = "MIT"
 assets = [
     { source = "target/release/trance-tui", dest = "/usr/bin/trance-tui", mode = "755" },
