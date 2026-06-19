@@ -41,6 +41,7 @@ pub enum Message {
     ActiveSaverSelected(String),
     LockNow,
     OpenConfigurator,
+    ToggleDaemon(bool),
 }
 
 impl AppModel {
@@ -186,6 +187,10 @@ impl cosmic::Application for AppModel {
         let content_list = widget::list_column()
             .add(header)
             .add(widget::settings::item(
+                "Background Daemon",
+                widget::toggler(self.daemon_running).on_toggle(Message::ToggleDaemon),
+            ))
+            .add(widget::settings::item(
                 "Idle Activation",
                 widget::toggler(self.local_config.idle_enabled).on_toggle(Message::ToggleIdleEnabled),
             ))
@@ -223,6 +228,39 @@ impl cosmic::Application for AppModel {
             Message::SubscriptionChannel => {}
             Message::UpdateConfig(config) => {
                 self.config = config;
+            }
+            Message::ToggleDaemon(toggled) => {
+                self.daemon_running = toggled;
+                if toggled {
+                    let sys_status = std::process::Command::new("systemctl")
+                        .args(["--user", "start", "trance-daemon"])
+                        .status();
+                    let success = sys_status.map(|s| s.success()).unwrap_or(false);
+                    if !success {
+                        let _ = std::process::Command::new("trance-daemon")
+                            .arg("daemon")
+                            .spawn();
+                    }
+                } else {
+                    let sys_status = std::process::Command::new("systemctl")
+                        .args(["--user", "stop", "trance-daemon"])
+                        .status();
+                    let success = sys_status.map(|s| s.success()).unwrap_or(false);
+                    if !success {
+                        let pid_path = if let Ok(runtime_dir) = std::env::var("XDG_RUNTIME_DIR") {
+                            std::path::PathBuf::from(runtime_dir).join("trance-daemon.pid")
+                        } else {
+                            std::env::temp_dir().join("trance-daemon.pid")
+                        };
+                        if let Ok(pid_str) = std::fs::read_to_string(&pid_path) {
+                            if let Ok(pid) = pid_str.trim().parse::<i32>() {
+                                unsafe {
+                                    libc::kill(pid, libc::SIGTERM);
+                                }
+                            }
+                        }
+                    }
+                }
             }
             Message::ToggleIdleEnabled(toggled) => {
                 self.local_config.idle_enabled = toggled;
