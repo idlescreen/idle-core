@@ -1,6 +1,6 @@
 [package]
 name = "trance-daemon"
-version = "0.1.3"
+version = "0.1.4"
 edition = "2021"
 description = "trance-daemon - Background idle monitoring service for trance screensavers"
 license = "MIT"
@@ -31,7 +31,7 @@ assets = [
 
 [package.metadata.generate-rpm]
 name = "trance"
-version = "0.1.3"
+version = "0.1.4"
 release = "1"
 arch = "x86_64"
 summary = "trance - Background idle monitoring service for trance screensavers"
