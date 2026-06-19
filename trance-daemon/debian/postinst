@@ -5,6 +5,16 @@ set -e
 if [ "$1" = "configure" ]; then
     # Enable the service globally for all user sessions so it runs automatically on login
     systemctl --global enable trance-daemon.service || true
+
+    # Start/restart the service for all currently logged-in users
+    if command -v loginctl >/dev/null && command -v systemctl >/dev/null; then
+        loginctl list-users --no-legend | while read -r uid user linger state; do
+            if [ -n "$user" ]; then
+                systemctl --user -M "${user}@" daemon-reload || true
+                systemctl --user -M "${user}@" start trance-daemon.service || true
+            fi
+        done
+    fi
 fi
 
 exit 0

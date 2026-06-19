@@ -2,9 +2,22 @@
 # prerm script for trance-daemon
 set -e
 
+if [ "$1" = "remove" ] || [ "$1" = "upgrade" ]; then
+    # Stop the service for all currently logged-in users
+    if command -v loginctl >/dev/null && command -v systemctl >/dev/null; then
+        loginctl list-users --no-legend | while read -r uid user linger state; do
+            if [ -n "$user" ]; then
+                systemctl --user -M "${user}@" stop trance-daemon.service || true
+            fi
+        done
+    fi
+fi
+
 if [ "$1" = "remove" ]; then
     # Disable the user service globally
-    systemctl --global disable trance-daemon.service || true
+    if command -v systemctl >/dev/null; then
+        systemctl --global disable trance-daemon.service || true
+    fi
 fi
 
 exit 0
