@@ -43,6 +43,7 @@ pub enum Message {
     ToggleDaemon(bool),
     DecreaseTimeout,
     IncreaseTimeout,
+    OpenPowerSettings,
 }
 
 impl AppModel {
@@ -164,8 +165,10 @@ impl cosmic::Application for AppModel {
         };
         let selected = Some(self.local_config.active_saver.clone().unwrap_or_else(|| "Random".to_string()));
 
-        let mut grid = cosmic::iced::widget::Column::new().spacing(6);
-        let mut row = cosmic::iced::widget::Row::new().spacing(6);
+        let mut grid = cosmic::iced::widget::Column::new().spacing(6)
+            .width(cosmic::iced::Length::Fill);
+        let mut row = cosmic::iced::widget::Row::new().spacing(6)
+            .width(cosmic::iced::Length::Fill);
         let len = options.len();
         for (i, s) in options.into_iter().enumerate() {
             let is_selected = selected.as_ref() == Some(&s);
@@ -180,7 +183,8 @@ impl cosmic::Application for AppModel {
             row = row.push(btn);
             if i % 2 == 1 {
                 grid = grid.push(row);
-                row = cosmic::iced::widget::Row::new().spacing(6);
+                row = cosmic::iced::widget::Row::new().spacing(6)
+                    .width(cosmic::iced::Length::Fill);
             }
         }
         if len % 2 != 0 {
@@ -211,7 +215,13 @@ impl cosmic::Application for AppModel {
 
         let actions = cosmic::iced::widget::Row::new()
             .spacing(8)
-            .push(widget::button::suggested("Lock Now").on_press(Message::LockNow));
+            .width(cosmic::iced::Length::Fill)
+            .push(widget::button::suggested("Run Screensaver")
+                .width(cosmic::iced::Length::Fill)
+                .on_press(Message::LockNow))
+            .push(widget::button::standard("Power Settings")
+                .width(cosmic::iced::Length::Fill)
+                .on_press(Message::OpenPowerSettings));
 
         let content_list = widget::list_column()
             .add(header)
@@ -292,6 +302,11 @@ impl cosmic::Application for AppModel {
                         }
                     }
                 }
+            }
+            Message::OpenPowerSettings => {
+                let _ = std::process::Command::new("cosmic-settings")
+                    .arg("power")
+                    .spawn();
             }
             Message::ToggleIdleEnabled(toggled) => {
                 self.local_config.idle_enabled = toggled;
