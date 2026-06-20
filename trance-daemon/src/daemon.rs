@@ -4,14 +4,9 @@ use crate::config::DaemonConfig;
 use crate::idle::query_logind_idle;
 use std::fs;
 use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Arc;
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 use trance_runner::launcher::{launch_screensaver, LaunchMode, ALLOWED_SAVERS};
-
-static RUNNING: AtomicBool = AtomicBool::new(true);
-
-extern "C" fn handle_signal(_sig: libc::c_int) {
-    RUNNING.store(false, Ordering::Relaxed);
-}
 
 pub fn run_daemon() -> Result<(), Box<dyn std::error::Error>> {
     // Write PID file for process tracking
@@ -23,16 +18,9 @@ pub fn run_daemon() -> Result<(), Box<dyn std::error::Error>> {
     fs::write(&pid_path, std::process::id().to_string())?;
 
     // Setup signal handler for graceful shutdown
-    unsafe {
-        libc::signal(
-            libc::SIGINT,
-            handle_signal as *const () as libc::sighandler_t,
-        );
-        libc::signal(
-            libc::SIGTERM,
-            handle_signal as *const () as libc::sighandler_t,
-        );
-    }
+    let running = Arc::new(AtomicBool::new(true));
+    signal_hook::flag::register(signal_hook::consts::SIGINT, Arc::clone(&running))?;
+    signal_hook::flag::register(signal_hook::consts::SIGTERM, Arc::clone(&running))?;
 
     println!("trance-daemon running (pid {})...", std::process::id());
 
@@ -48,7 +36,7 @@ pub fn run_daemon() -> Result<(), Box<dyn std::error::Error>> {
     let mut tick_counter = 0;
     let mut last_headless_warn: Option<Instant> = None;
 
-    while RUNNING.load(Ordering::Relaxed) {
+    while running.load(Ordering::Relaxed) {
         std::thread::sleep(Duration::from_millis(1000));
         tick_counter += 1;
 

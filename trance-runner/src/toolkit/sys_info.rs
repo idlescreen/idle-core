@@ -27,6 +27,14 @@ pub use linux_queries::{
 
 static DARK_MODE_CACHE: OnceLock<Mutex<(Option<bool>, Instant)>> = OnceLock::new();
 static SYSTEM_INFO_CACHE: OnceLock<Mutex<(Option<SystemInfo>, Instant)>> = OnceLock::new();
+static SYSTEM_OBJECT: OnceLock<Mutex<sysinfo::System>> = OnceLock::new();
+
+fn get_system() -> std::sync::MutexGuard<'static, sysinfo::System> {
+    SYSTEM_OBJECT
+        .get_or_init(|| Mutex::new(sysinfo::System::new_all()))
+        .lock()
+        .unwrap()
+}
 
 /// Returns rich live system info. Cross-platform. Cached for 3 seconds.
 pub fn get_system_info() -> SystemInfo {
@@ -44,13 +52,33 @@ pub fn get_system_info() -> SystemInfo {
 }
 
 fn get_system_info_raw() -> SystemInfo {
-    let (os, logo_text) = query_os_version();
-    let kernel = query_kernel();
-    let hostname = query_hostname();
-    let cpu = query_cpu_brand().unwrap_or_else(|| "CPU".to_string());
-    let (mem_used_mb, mem_total_mb, mem_used_pct) = query_memory();
-    let cpu_usage_pct = query_cpu_usage_pct();
-    let uptime_secs = query_uptime_secs();
+    let mut sys = get_system();
+    sys.refresh_all();
+
+    let os = sysinfo::System::long_os_version().unwrap_or_else(|| "Linux".to_string());
+    let logo_text = os.clone();
+    let kernel = sysinfo::System::kernel_version().unwrap_or_else(|| "unknown".to_string());
+    let hostname = sysinfo::System::host_name().unwrap_or_else(|| "localhost".to_string());
+    let cpu = sys
+        .cpus()
+        .first()
+        .map(|c| c.brand().to_string())
+        .unwrap_or_else(|| "CPU".to_string());
+
+    let total = sys.total_memory();
+    let available = sys.available_memory();
+    let used = total.saturating_sub(available);
+    let mem_total_mb = total / (1024 * 1024);
+    let mem_used_mb = used / (1024 * 1024);
+    let mem_used_pct = if total > 0 {
+        (used as f32 / total as f32) * 100.0
+    } else {
+        0.0
+    };
+
+    let cpu_usage_pct = sys.global_cpu_info().cpu_usage();
+    let uptime_secs = sysinfo::System::uptime();
+
     let power = query_power_status().unwrap_or_default();
     let power_status = if power.ac_online {
         "AC".to_string()
@@ -87,40 +115,6 @@ fn get_system_info_raw() -> SystemInfo {
         gpus,
         monitors,
     }
-}
-
-// ---------------------------------------------------------------------------
-// Cross-platform query dispatchers
-// ---------------------------------------------------------------------------
-
-fn query_os_version() -> (String, String) {
-    linux_proc::query_os_version_linux()
-}
-
-fn query_kernel() -> String {
-    linux_proc::query_kernel_linux()
-}
-
-fn query_hostname() -> String {
-    std::env::var("COMPUTERNAME")
-        .or_else(|_| std::env::var("HOSTNAME"))
-        .unwrap_or_else(|_| "localhost".to_string())
-}
-
-fn query_cpu_brand() -> Option<String> {
-    linux_proc::query_cpu_brand_linux()
-}
-
-fn query_memory() -> (u64, u64, f32) {
-    linux_proc::query_memory_linux()
-}
-
-fn query_cpu_usage_pct() -> f32 {
-    linux_proc::query_cpu_usage_pct_linux()
-}
-
-fn query_uptime_secs() -> u64 {
-    linux_proc::query_uptime_secs_linux()
 }
 
 /// Detect dark mode preference. Cached for 3 seconds.

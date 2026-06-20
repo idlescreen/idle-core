@@ -15,13 +15,10 @@ pub fn get_monitor_refresh_rate() -> u32 {
 // ---------------------------------------------------------------------------
 
 pub fn get_terminal_size() -> (usize, usize) {
-    unsafe {
-        let mut ws: libc::winsize = std::mem::zeroed();
-        if libc::ioctl(libc::STDOUT_FILENO, libc::TIOCGWINSZ, &mut ws) == 0 {
-            (ws.ws_col as usize, ws.ws_row as usize)
-        } else {
-            (80, 24)
-        }
+    if let Ok((cols, rows)) = crossterm::terminal::size() {
+        (cols as usize, rows as usize)
+    } else {
+        (80, 24)
     }
 }
 
@@ -38,21 +35,13 @@ pub fn check_mouse_activity(_initial_pos: &mut Option<(i32, i32)>) -> bool {
 // ---------------------------------------------------------------------------
 
 pub fn check_keypress() -> bool {
-    unsafe {
-        let mut fd_set: libc::fd_set = std::mem::zeroed();
-        libc::FD_SET(libc::STDIN_FILENO, &mut fd_set);
-        let mut timeout = libc::timeval {
-            tv_sec: 0,
-            tv_usec: 0,
-        };
-        libc::select(
-            libc::STDIN_FILENO + 1,
-            &mut fd_set,
-            std::ptr::null_mut(),
-            std::ptr::null_mut(),
-            &mut timeout,
-        ) > 0
+    use crossterm::event::{self, Event};
+    if let Ok(true) = event::poll(std::time::Duration::from_secs(0)) {
+        if let Ok(Event::Key(_)) = event::read() {
+            return true;
+        }
     }
+    false
 }
 
 // ---------------------------------------------------------------------------

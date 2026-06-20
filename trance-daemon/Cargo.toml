@@ -1,6 +1,6 @@
 [package]
 name = "trance-daemon"
-version = "0.1.11"
+version = "0.1.12"
 edition = "2021"
 description = "Background idle daemon and core package for trance screensavers"
 license = "MIT"
@@ -15,6 +15,7 @@ trance-api = { path = "../trance-api" }
 libc = "0.2"
 wayland-client = "0.31"
 wayland-protocols = { version = "0.32", features = ["client", "staging"] }
+signal-hook = "0.3"
 
 [package.metadata.deb]
 name = "trance"
@@ -32,7 +33,7 @@ assets = [
 
 [package.metadata.generate-rpm]
 name = "trance"
-version = "0.1.11"
+version = "0.1.12"
 release = "1"
 arch = "x86_64"
 summary = "Background idle daemon and core package for trance screensavers"
