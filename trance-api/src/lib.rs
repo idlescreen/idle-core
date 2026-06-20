@@ -152,11 +152,32 @@ pub struct SystemInfo {
 
 impl Default for SystemInfo {
     fn default() -> Self {
+        let mut os = "Linux".to_string();
+        let mut logo_text = "local76".to_string();
+        if let Ok(content) = std::fs::read_to_string("/etc/os-release") {
+            for line in content.lines() {
+                if line.starts_with("PRETTY_NAME=") {
+                    let val = line.split('=').nth(1).unwrap_or("").trim_matches('"');
+                    if !val.is_empty() {
+                        os = val.to_string();
+                        logo_text = val.to_string();
+                        break;
+                    }
+                }
+            }
+        }
+
+        let hostname = std::env::var("HOSTNAME").unwrap_or_else(|_| "localhost".to_string());
+
+        let kernel = std::fs::read_to_string("/proc/sys/kernel/osrelease")
+            .map(|s| s.trim().to_string())
+            .unwrap_or_else(|_| "unknown".to_string());
+
         Self {
-            os: "Linux".to_string(),
-            logo_text: "local76".to_string(),
-            kernel: "unknown".to_string(),
-            hostname: "localhost".to_string(),
+            os,
+            logo_text,
+            kernel,
+            hostname,
             cpu: "CPU".to_string(),
             uptime_secs: 0,
             mem_used_mb: 1,
