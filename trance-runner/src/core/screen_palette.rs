@@ -35,8 +35,6 @@
 //!   (FallingGlyphs, RisingFlames, etc.). A `From<&ScreenPalette>` impl
 //!   bridges the two so effects can consume a `ScreenPalette` directly.
 
-
-
 pub use trance_api::ScreenPalette;
 
 #[cfg(test)]

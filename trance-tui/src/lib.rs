@@ -33,19 +33,28 @@ pub fn run_diagnostics(do_fix: bool) -> Result<(), Box<dyn std::error::Error>> {
 
     // 1. Check daemon config
     let config_path = std::env::var("HOME")
-        .map(|h| std::path::PathBuf::from(h).join(".config").join("local76").join("theme.yaml"))
+        .map(|h| {
+            std::path::PathBuf::from(h)
+                .join(".config")
+                .join("local76")
+                .join("theme.yaml")
+        })
         .ok();
-    
+
     if let Some(ref path) = config_path {
         if path.exists() {
             println!("- checking daemon config: OK ({})", path.display());
         } else {
-            println!("- checking daemon config: WARNING (Config file does not exist at {})", path.display());
+            println!(
+                "- checking daemon config: WARNING (Config file does not exist at {})",
+                path.display()
+            );
             if do_fix {
                 if let Some(parent) = path.parent() {
                     let _ = std::fs::create_dir_all(parent);
                 }
-                let default_cfg = "idle_enabled: true\nidle_timeout_mins: 5\nactive_saver: \"beams\"\n";
+                let default_cfg =
+                    "idle_enabled: true\nidle_timeout_mins: 5\nactive_saver: \"beams\"\n";
                 if std::fs::write(path, default_cfg).is_ok() {
                     println!("  -> [FIX] Created default config at theme.yaml");
                 }
@@ -56,10 +65,8 @@ pub fn run_diagnostics(do_fix: bool) -> Result<(), Box<dyn std::error::Error>> {
     }
 
     // 2. Check xterm
-    let xterm_check = std::process::Command::new("xterm")
-        .arg("-version")
-        .output();
-    
+    let xterm_check = std::process::Command::new("xterm").arg("-version").output();
+
     match xterm_check {
         Ok(output) if output.status.success() => {
             println!("- checking xterm installation: OK");
@@ -73,10 +80,8 @@ pub fn run_diagnostics(do_fix: bool) -> Result<(), Box<dyn std::error::Error>> {
     }
 
     // 3. Check busctl / logind access
-    let busctl_check = std::process::Command::new("busctl")
-        .arg("status")
-        .output();
-    
+    let busctl_check = std::process::Command::new("busctl").arg("status").output();
+
     match busctl_check {
         Ok(output) if output.status.success() => {
             println!("- checking systemd-logind bus accessibility: OK");
@@ -92,7 +97,11 @@ pub fn run_diagnostics(do_fix: bool) -> Result<(), Box<dyn std::error::Error>> {
     if detected.is_empty() {
         println!("- checking screensaver binaries: WARNING (No screensaver binaries found in search paths)");
     } else {
-        println!("- checking screensaver binaries: OK (Found {} screensavers: {:?})", detected.len(), detected);
+        println!(
+            "- checking screensaver binaries: OK (Found {} screensavers: {:?})",
+            detected.len(),
+            detected
+        );
     }
 
     if do_fix {

@@ -1,5 +1,5 @@
-use std::time::Duration;
 use std::sync::OnceLock;
+use std::time::Duration;
 
 /// A single cell in a character-grid renderer.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
@@ -346,7 +346,8 @@ impl MonitorCellBounds {
     }
 }
 
-pub static MONITOR_BOUNDS_CALLBACK: OnceLock<fn(usize, usize) -> MonitorCellBounds> = OnceLock::new();
+pub static MONITOR_BOUNDS_CALLBACK: OnceLock<fn(usize, usize) -> MonitorCellBounds> =
+    OnceLock::new();
 pub static IS_SECONDARY_MONITOR_CALLBACK: OnceLock<fn() -> bool> = OnceLock::new();
 
 pub fn get_primary_monitor_bounds(cols: usize, rows: usize) -> MonitorCellBounds {
@@ -373,7 +374,10 @@ pub fn is_secondary_monitor() -> bool {
 
 // Compatibility module structures for minimal changes in screensaver ports
 pub mod core {
-    pub use crate::{TerminalCell, LcgRng, hsl_to_rgb, rgb_to_hsl, percentage, lerp, Screensaver, ScreensaverState};
+    pub use crate::{
+        hsl_to_rgb, lerp, percentage, rgb_to_hsl, LcgRng, Screensaver, ScreensaverState,
+        TerminalCell,
+    };
     pub mod screensaver {
         pub use crate::{Screensaver, ScreensaverState};
     }
@@ -384,6 +388,9 @@ pub mod core {
 
 pub mod toolkit {
     pub mod sys_info {
-        pub use crate::{get_system_info, query_current_palette, SystemInfo, get_primary_monitor_bounds, is_secondary_monitor, MonitorCellBounds};
+        pub use crate::{
+            get_primary_monitor_bounds, get_system_info, is_secondary_monitor,
+            query_current_palette, MonitorCellBounds, SystemInfo,
+        };
     }
 }

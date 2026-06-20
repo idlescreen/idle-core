@@ -3,7 +3,7 @@
 use crate::config::Local76Config;
 use cosmic::cosmic_config::{self, CosmicConfigEntry};
 use cosmic::iced::platform_specific::shell::wayland::commands::popup::{destroy_popup, get_popup};
-use cosmic::iced::{futures, window::Id, Limits, Subscription};
+use cosmic::iced::{Limits, Subscription, futures, window::Id};
 use cosmic::prelude::*;
 use cosmic::widget;
 use futures::SinkExt;
@@ -66,8 +66,6 @@ impl AppModel {
         }
         self.daemon_running = false;
     }
-
-
 }
 
 /// Create a COSMIC application from the app model
@@ -102,9 +100,7 @@ impl cosmic::Application for AppModel {
             config: cosmic_config::Config::new(Self::APP_ID, crate::config::Config::VERSION)
                 .map(|context| match crate::config::Config::get_entry(&context) {
                     Ok(config) => config,
-                    Err((_errors, config)) => {
-                        config
-                    }
+                    Err((_errors, config)) => config,
                 })
                 .unwrap_or_default(),
             local_config: Local76Config::load(),
@@ -145,11 +141,18 @@ impl cosmic::Application for AppModel {
             }
             opts
         };
-        let selected = Some(self.local_config.active_saver.clone().unwrap_or_else(|| "Random".to_string()));
+        let selected = Some(
+            self.local_config
+                .active_saver
+                .clone()
+                .unwrap_or_else(|| "Random".to_string()),
+        );
 
-        let mut grid = cosmic::iced::widget::Column::new().spacing(6)
+        let mut grid = cosmic::iced::widget::Column::new()
+            .spacing(6)
             .width(cosmic::iced::Length::Fill);
-        let mut row = cosmic::iced::widget::Row::new().spacing(6)
+        let mut row = cosmic::iced::widget::Row::new()
+            .spacing(6)
             .width(cosmic::iced::Length::Fill);
         let len = options.len();
         for (i, s) in options.into_iter().enumerate() {
@@ -165,7 +168,8 @@ impl cosmic::Application for AppModel {
             row = row.push(btn);
             if i % 2 == 1 {
                 grid = grid.push(row);
-                row = cosmic::iced::widget::Row::new().spacing(6)
+                row = cosmic::iced::widget::Row::new()
+                    .spacing(6)
                     .width(cosmic::iced::Length::Fill);
             }
         }
@@ -198,12 +202,10 @@ impl cosmic::Application for AppModel {
             ))
             .add(widget::settings::item(
                 "Idle Activation",
-                widget::toggler(self.local_config.idle_enabled).on_toggle(Message::ToggleIdleEnabled),
+                widget::toggler(self.local_config.idle_enabled)
+                    .on_toggle(Message::ToggleIdleEnabled),
             ))
-            .add(widget::settings::item(
-                "Idle Timeout",
-                timeout_adjuster,
-            ))
+            .add(widget::settings::item("Idle Timeout", timeout_adjuster))
             .add(grid)
             .add(actions);
 
@@ -215,17 +217,18 @@ impl cosmic::Application for AppModel {
         Subscription::batch(vec![
             // Create a subscription which emits updates through a channel.
             Subscription::run(|| {
-                cosmic::iced::stream::channel(4, move |mut channel: futures::channel::mpsc::Sender<_>| async move {
-                    _ = channel.send(Message::SubscriptionChannel).await;
-                    futures::future::pending().await
-                })
+                cosmic::iced::stream::channel(
+                    4,
+                    move |mut channel: futures::channel::mpsc::Sender<_>| async move {
+                        _ = channel.send(Message::SubscriptionChannel).await;
+                        futures::future::pending().await
+                    },
+                )
             }),
             // Watch for application configuration changes.
             self.core()
                 .watch_config::<crate::config::Config>(Self::APP_ID)
-                .map(|update| {
-                    Message::UpdateConfig(update.config)
-                }),
+                .map(|update| Message::UpdateConfig(update.config)),
         ])
     }
 
@@ -322,7 +325,7 @@ impl cosmic::Application for AppModel {
                         .min_height(200.0)
                         .max_height(1080.0);
                     get_popup(popup_settings)
-                }
+                };
             }
             Message::PopupClosed(id) => {
                 if self.popup.as_ref() == Some(&id) {

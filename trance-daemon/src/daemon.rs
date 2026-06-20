@@ -2,10 +2,10 @@
 
 use crate::config::DaemonConfig;
 use crate::idle::query_logind_idle;
-use trance_runner::launcher::{launch_screensaver, LaunchMode, ALLOWED_SAVERS};
 use std::fs;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
+use trance_runner::launcher::{launch_screensaver, LaunchMode, ALLOWED_SAVERS};
 
 static RUNNING: AtomicBool = AtomicBool::new(true);
 
@@ -88,7 +88,8 @@ pub fn run_daemon() -> Result<(), Box<dyn std::error::Error>> {
 
             if is_system_idle {
                 if active_child.is_none() {
-                    let has_display = std::env::var("DISPLAY").is_ok() || std::env::var("WAYLAND_DISPLAY").is_ok();
+                    let has_display = std::env::var("DISPLAY").is_ok()
+                        || std::env::var("WAYLAND_DISPLAY").is_ok();
                     if has_display {
                         // Choose a screensaver: active_saver if set, else random from allowlist
                         let name = if let Some(ref active) = config.active_saver {
@@ -102,10 +103,7 @@ pub fn run_daemon() -> Result<(), Box<dyn std::error::Error>> {
                             ALLOWED_SAVERS[rand_idx].to_string()
                         };
 
-                        println!(
-                            "system idle. launching screensaver '{}'...",
-                            name
-                        );
+                        println!("system idle. launching screensaver '{}'...", name);
                         match launch_screensaver(&name, LaunchMode::Daemon) {
                             Ok(child) => {
                                 active_child = Some(child);
@@ -129,7 +127,10 @@ pub fn run_daemon() -> Result<(), Box<dyn std::error::Error>> {
                     // If running, verify it hasn't exited
                     if let Some(ref mut child) = active_child {
                         if let Ok(Some(status)) = child.try_wait() {
-                            println!("screensaver process exited (status: {}). resetting child.", status);
+                            println!(
+                                "screensaver process exited (status: {}). resetting child.",
+                                status
+                            );
                             active_child = None;
                         }
                     }
@@ -137,9 +138,7 @@ pub fn run_daemon() -> Result<(), Box<dyn std::error::Error>> {
             } else {
                 // Active session (not idle)
                 if let Some(mut child) = active_child.take() {
-                    println!(
-                        "system activity detected. killing screensaver..."
-                    );
+                    println!("system activity detected. killing screensaver...");
                     let _ = child.kill();
                 }
             }

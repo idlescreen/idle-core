@@ -10,5 +10,5 @@ pub mod apps;
 pub mod core;
 pub mod discovery;
 pub mod launcher;
-pub mod trance_runner;
 pub mod toolkit;
+pub mod trance_runner;

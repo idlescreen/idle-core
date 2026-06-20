@@ -1,6 +1,6 @@
 [Desktop Entry]
-Name=Trance Applet
-Comment=Screensaver control applet for local76/COSMIC
+Name=Trance
+Comment=Screensaver applet for COSMIC
 Type=Application
 Icon=display-symbolic
 Exec=trance-applet %F

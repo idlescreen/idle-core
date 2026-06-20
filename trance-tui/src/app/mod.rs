@@ -179,8 +179,7 @@ pub fn run_app() -> Result<(), Box<dyn std::error::Error>> {
                                     .duration_since(std::time::SystemTime::UNIX_EPOCH)
                                     .unwrap_or_default();
                                 state.quote_idx = now.as_nanos() as usize;
-                                let is_dark =
-                                    trance_runner::toolkit::sys_info::query_dark_mode();
+                                let is_dark = trance_runner::toolkit::sys_info::query_dark_mode();
                                 state.dark_mode = is_dark;
                                 state.accent_color =
                                     AppState::get_accent_by_index(state.theme_idx, is_dark);

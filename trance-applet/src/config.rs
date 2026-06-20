@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-use cosmic::cosmic_config::{self, cosmic_config_derive::CosmicConfigEntry, CosmicConfigEntry};
+use cosmic::cosmic_config::{self, CosmicConfigEntry, cosmic_config_derive::CosmicConfigEntry};
 use std::fs;
 use std::path::PathBuf;
 
@@ -103,7 +103,11 @@ impl Local76Config {
                  theme_idx: {}\n\
                  active_saver: \"{}\"\n\
                  idle_enabled: {}\n",
-                self.accent_color, self.idle_timeout_mins, self.theme_idx, active_str, self.idle_enabled
+                self.accent_color,
+                self.idle_timeout_mins,
+                self.theme_idx,
+                active_str,
+                self.idle_enabled
             );
             fs::write(&path, content)?;
         }

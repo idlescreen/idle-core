@@ -91,18 +91,49 @@ pub fn resolve_saver_binary(name: &str, mode: &LaunchMode) -> std::io::Result<Pa
 
             // Base release and debug workspace directories
             let dirs = vec![
-                projects.join("local76").join("trance-plugins").join("target").join("release"),
-                projects.join("local76").join("trance-plugins").join("target").join("debug"),
-                projects.join("local76").join("screensavers").join("target").join("release"),
-                projects.join("local76").join("screensavers").join("target").join("debug"),
-                projects.join("trance-plugins").join("target").join("release"),
+                projects
+                    .join("local76")
+                    .join("trance-plugins")
+                    .join("target")
+                    .join("release"),
+                projects
+                    .join("local76")
+                    .join("trance-plugins")
+                    .join("target")
+                    .join("debug"),
+                projects
+                    .join("local76")
+                    .join("screensavers")
+                    .join("target")
+                    .join("release"),
+                projects
+                    .join("local76")
+                    .join("screensavers")
+                    .join("target")
+                    .join("debug"),
+                projects
+                    .join("trance-plugins")
+                    .join("target")
+                    .join("release"),
                 projects.join("trance-plugins").join("target").join("debug"),
                 projects.join("screensavers").join("target").join("release"),
                 projects.join("screensavers").join("target").join("debug"),
-                projects.join(format!("trance-plugin-{}", clean)).join("target").join("release"),
-                projects.join(format!("trance-plugin-{}", clean)).join("target").join("debug"),
-                projects.join(format!("screensaver-{}", clean)).join("target").join("release"),
-                projects.join(format!("screensaver-{}", clean)).join("target").join("debug"),
+                projects
+                    .join(format!("trance-plugin-{}", clean))
+                    .join("target")
+                    .join("release"),
+                projects
+                    .join(format!("trance-plugin-{}", clean))
+                    .join("target")
+                    .join("debug"),
+                projects
+                    .join(format!("screensaver-{}", clean))
+                    .join("target")
+                    .join("release"),
+                projects
+                    .join(format!("screensaver-{}", clean))
+                    .join("target")
+                    .join("debug"),
             ];
 
             for base in dirs {
@@ -128,21 +159,28 @@ pub fn resolve_saver_binary(name: &str, mode: &LaunchMode) -> std::io::Result<Pa
 /// the xterm flags, safe environment variables, and the /s argument for embed.
 pub fn prepare_xterm_command(binary: &Path, mode: LaunchMode) -> Command {
     let mut cmd = Command::new("xterm");
-    let current_exe = std::env::current_exe()
-        .unwrap_or_else(|_| PathBuf::from("trance-daemon"));
+    let current_exe = std::env::current_exe().unwrap_or_else(|_| PathBuf::from("trance-daemon"));
 
     match mode {
         LaunchMode::Daemon | LaunchMode::Preview => {
             cmd.args([
                 "-fullscreen",
-                "-bg", "black",
-                "-fg", "white",
-                "-ms", "black",
-                "-xrm", "XTerm*pointerColorBackground: black",
-                "-xrm", "XTerm*pointerMode: 2",
-                "-xrm", "XTerm*borderWidth: 0",
-                "-xrm", "XTerm*internalBorder: 0",
-                "-xrm", "XTerm*highlightThickness: 0",
+                "-bg",
+                "black",
+                "-fg",
+                "white",
+                "-ms",
+                "black",
+                "-xrm",
+                "XTerm*pointerColorBackground: black",
+                "-xrm",
+                "XTerm*pointerMode: 2",
+                "-xrm",
+                "XTerm*borderWidth: 0",
+                "-xrm",
+                "XTerm*internalBorder: 0",
+                "-xrm",
+                "XTerm*highlightThickness: 0",
                 "-e",
             ])
             .arg(current_exe)
@@ -180,7 +218,7 @@ pub fn prepare_xterm_command(binary: &Path, mode: LaunchMode) -> Command {
     }
 
     cmd.env("XCURSOR_PATH", "/nonexistent")
-       .env("XCURSOR_THEME", "none");
+        .env("XCURSOR_THEME", "none");
 
     cmd.env("TRANCE_SCREENSAVER", "1");
 
@@ -273,7 +311,7 @@ fn strip_ansi_codes(s: &str) -> String {
     let mut result = String::new();
     let mut in_escape = false;
     let mut chars = s.chars().peekable();
-    
+
     while let Some(c) = chars.next() {
         if c == '\x1b' {
             if chars.peek() == Some(&'[') {
@@ -282,21 +320,24 @@ fn strip_ansi_codes(s: &str) -> String {
                 continue;
             }
         }
-        
+
         if in_escape {
             if c == 'm' {
                 in_escape = false;
             }
             continue;
         }
-        
+
         result.push(c);
     }
     result
 }
 
 fn is_wayland() -> bool {
-    std::env::var("XDG_SESSION_TYPE").unwrap_or_default().to_lowercase().contains("wayland")
+    std::env::var("XDG_SESSION_TYPE")
+        .unwrap_or_default()
+        .to_lowercase()
+        .contains("wayland")
         || std::env::var("WAYLAND_DISPLAY").is_ok()
 }
 
@@ -305,7 +346,7 @@ fn get_secondary_monitors_to_disable() -> Vec<String> {
     let output = std::process::Command::new("cosmic-randr")
         .arg("list")
         .output();
-    
+
     if let Ok(out) = output {
         if out.status.success() {
             let raw_stdout = String::from_utf8_lossy(&out.stdout);
@@ -313,20 +354,20 @@ fn get_secondary_monitors_to_disable() -> Vec<String> {
             let mut current_monitor: Option<String> = None;
             let mut current_is_primary = false;
             let mut current_is_enabled = false;
-            
+
             for line in stdout.lines() {
                 let trimmed = line.trim();
                 if trimmed.is_empty() {
                     continue;
                 }
-                
+
                 if !line.starts_with(' ') {
                     if let Some(ref mon) = current_monitor {
                         if current_is_enabled && !current_is_primary {
                             secondaries.push(mon.clone());
                         }
                     }
-                    
+
                     let parts: Vec<&str> = trimmed.split_whitespace().collect();
                     if !parts.is_empty() {
                         let name = parts[0].to_string();
@@ -343,7 +384,7 @@ fn get_secondary_monitors_to_disable() -> Vec<String> {
                     }
                 }
             }
-            
+
             if let Some(ref mon) = current_monitor {
                 if current_is_enabled && !current_is_primary {
                     secondaries.push(mon.clone());

@@ -192,13 +192,18 @@ pub fn query_system_theme() -> SystemTheme {
 
 pub use trance_api::MonitorCellBounds;
 
-static MONITOR_LAYOUT_CACHE: OnceLock<Mutex<Option<(Vec<MonitorCellBounds>, (usize, usize), Instant)>>> = OnceLock::new();
+static MONITOR_LAYOUT_CACHE: OnceLock<
+    Mutex<Option<(Vec<MonitorCellBounds>, (usize, usize), Instant)>>,
+> = OnceLock::new();
 
 pub fn get_monitor_layouts(cols: usize, rows: usize) -> Vec<MonitorCellBounds> {
     let cache_mutex = MONITOR_LAYOUT_CACHE.get_or_init(|| Mutex::new(None));
     let mut cache = cache_mutex.lock().unwrap();
     if let Some((ref layouts, (cached_cols, cached_rows), last_query)) = *cache {
-        if cached_cols == cols && cached_rows == rows && last_query.elapsed() < Duration::from_secs(5) {
+        if cached_cols == cols
+            && cached_rows == rows
+            && last_query.elapsed() < Duration::from_secs(5)
+        {
             return layouts.clone();
         }
     }
@@ -206,10 +211,26 @@ pub fn get_monitor_layouts(cols: usize, rows: usize) -> Vec<MonitorCellBounds> {
     let mut computed_layouts = None;
     if let Some(xmonitors) = query_monitors_from_xrandr() {
         // Calculate total virtual bounding box
-        let min_x = xmonitors.iter().map(|&(_, _, _, x, _)| x).min().unwrap_or(0);
-        let max_x = xmonitors.iter().map(|&(_, w, _, x, _)| x + w as i32).max().unwrap_or(0);
-        let min_y = xmonitors.iter().map(|&(_, _, _, _, y)| y).min().unwrap_or(0);
-        let max_y = xmonitors.iter().map(|&(_, _, h, _, y)| y + h as i32).max().unwrap_or(0);
+        let min_x = xmonitors
+            .iter()
+            .map(|&(_, _, _, x, _)| x)
+            .min()
+            .unwrap_or(0);
+        let max_x = xmonitors
+            .iter()
+            .map(|&(_, w, _, x, _)| x + w as i32)
+            .max()
+            .unwrap_or(0);
+        let min_y = xmonitors
+            .iter()
+            .map(|&(_, _, _, _, y)| y)
+            .min()
+            .unwrap_or(0);
+        let max_y = xmonitors
+            .iter()
+            .map(|&(_, _, h, _, y)| y + h as i32)
+            .max()
+            .unwrap_or(0);
 
         let total_width = (max_x - min_x) as usize;
         let total_height = (max_y - min_y) as usize;
@@ -256,7 +277,8 @@ pub fn get_monitor_layouts(cols: usize, rows: usize) -> Vec<MonitorCellBounds> {
 
 pub fn get_primary_monitor_bounds(cols: usize, rows: usize) -> MonitorCellBounds {
     let layouts = get_monitor_layouts(cols, rows);
-    layouts.into_iter()
+    layouts
+        .into_iter()
         .find(|l| l.is_primary)
         .unwrap_or(MonitorCellBounds {
             start_col: 0,
@@ -272,7 +294,6 @@ pub fn is_secondary_monitor() -> bool {
 }
 
 pub fn query_monitors_from_xrandr() -> Option<Vec<(bool, u32, u32, i32, i32)>> {
-
     if let Ok(exe) = std::env::current_exe() {
         if exe.to_string_lossy().contains("/deps/") {
             return None;

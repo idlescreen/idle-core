@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 
+use std::os::fd::AsFd;
+use std::os::unix::io::AsRawFd;
 use std::process::Command;
-use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc;
+use std::sync::Arc;
 use std::thread;
-use std::os::unix::io::AsRawFd;
-use std::os::fd::AsFd;
 
 use wayland_client::{
     protocol::{wl_registry, wl_seat},
@@ -180,21 +180,23 @@ impl Dispatch<wl_registry::WlRegistry, ()> for WaylandState {
         qh: &QueueHandle<Self>,
     ) {
         match event {
-            wl_registry::Event::Global { name, interface, version } => {
+            wl_registry::Event::Global {
+                name,
+                interface,
+                version,
+            } => {
                 if interface == "ext_idle_notifier_v1" {
-                    state.notifier = Some(registry.bind::<ext_idle_notifier_v1::ExtIdleNotifierV1, _, _>(
-                        name,
-                        version,
-                        qh,
-                        (),
-                    ));
+                    state.notifier = Some(
+                        registry.bind::<ext_idle_notifier_v1::ExtIdleNotifierV1, _, _>(
+                            name,
+                            version,
+                            qh,
+                            (),
+                        ),
+                    );
                 } else if interface == "wl_seat" {
-                    state.seat = Some(registry.bind::<wl_seat::WlSeat, _, _>(
-                        name,
-                        version,
-                        qh,
-                        (),
-                    ));
+                    state.seat =
+                        Some(registry.bind::<wl_seat::WlSeat, _, _>(name, version, qh, ()));
                 }
             }
             _ => {}
@@ -305,17 +307,36 @@ impl WaylandIdleMonitor {
                     let _ = conn.flush();
                     let ret = unsafe { libc::poll(&mut poll_fd, 1, 100) };
                     if ret > 0 {
+                        if poll_fd.revents & (libc::POLLHUP | libc::POLLERR | libc::POLLNVAL) != 0 {
+                            eprintln!("WaylandIdleMonitor: connection closed or error");
+                            break;
+                        }
                         if poll_fd.revents & libc::POLLIN != 0 {
-                            if let Ok(_) = guard.read() {
-                                let _ = event_queue.dispatch_pending(&mut state);
+                            match guard.read() {
+                                Ok(_) => {
+                                    if let Err(e) = event_queue.dispatch_pending(&mut state) {
+                                        eprintln!("WaylandIdleMonitor dispatch error: {}", e);
+                                        break;
+                                    }
+                                }
+                                Err(e) => {
+                                    eprintln!("WaylandIdleMonitor read error: {}", e);
+                                    break;
+                                }
                             }
                         }
                     } else if ret < 0 {
-                        eprintln!("WaylandIdleMonitor poll error");
-                        break;
+                        let err = std::io::Error::last_os_error();
+                        if err.kind() != std::io::ErrorKind::Interrupted {
+                            eprintln!("WaylandIdleMonitor poll error: {}", err);
+                            break;
+                        }
                     }
                 } else {
-                    let _ = event_queue.dispatch_pending(&mut state);
+                    if let Err(e) = event_queue.dispatch_pending(&mut state) {
+                        eprintln!("WaylandIdleMonitor dispatch error: {}", e);
+                        break;
+                    }
                 }
 
                 if let Ok(new_timeout_mins) = cmd_rx.try_recv() {
