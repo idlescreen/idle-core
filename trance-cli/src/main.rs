@@ -4,6 +4,8 @@ use std::process::ExitCode;
 
 use trance_dbus::{daemon_available, TranceClient};
 
+mod doctor;
+
 fn main() -> ExitCode {
     match run(std::env::args().skip(1).collect()) {
         Ok(()) => ExitCode::SUCCESS,
@@ -18,6 +20,10 @@ fn run(args: Vec<String>) -> Result<(), String> {
     if args.is_empty() || matches!(args[0].as_str(), "-h" | "--help" | "help") {
         print_usage();
         return Ok(());
+    }
+
+    if args[0] == "doctor" {
+        return doctor::run_doctor();
     }
 
     let client = TranceClient::connect().map_err(|error| {
@@ -196,6 +202,7 @@ fn print_usage() {
            stop                   Stop preview or idle presentation\n\
            gpu on | off | status  Toggle GPU upscaling\n\
            fps-overlay on|off|status  Toggle on-screen FPS overlay\n\
-           render-scale <0.25-1.0>|default|status  Simulation grid density (zoom)\n"
+           render-scale <0.25-1.0>|default|status  Simulation grid density (zoom)\n\
+           doctor                 Run system diagnostics and verify environment\n"
     );
 }

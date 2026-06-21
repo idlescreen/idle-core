@@ -14,6 +14,7 @@ workspace = true
 
 [dependencies]
 trance-dbus = { workspace = true }
+libc = { workspace = true }
 
 [package.metadata.deb]
 name = "trance-cli"
