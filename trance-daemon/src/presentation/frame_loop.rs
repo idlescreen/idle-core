@@ -43,6 +43,16 @@ pub fn run_frame_loop(
         match display_mode {
             DisplayMode::Expand => {
                 for layout in layouts {
+                    let is_sec = layout.id != primary.id;
+                    if is_sec {
+                        unsafe {
+                            std::env::set_var("TRANCE_SECONDARY_MONITOR", "1");
+                        }
+                    } else {
+                        unsafe {
+                            std::env::remove_var("TRANCE_SECONDARY_MONITOR");
+                        }
+                    }
                     let (cols, rows) = session.grid_for_pixels(layout.width, layout.height);
                     let mut pixels = session.render(cols, rows, layout.width, layout.height);
                     maybe_draw_overlays(
@@ -54,6 +64,9 @@ pub fn run_frame_loop(
                         *achieved_fps,
                     );
                     presenter.submit_frame(layout.id, layout.width, layout.height, pixels);
+                }
+                unsafe {
+                    std::env::remove_var("TRANCE_SECONDARY_MONITOR");
                 }
             }
             DisplayMode::Mirror => {
