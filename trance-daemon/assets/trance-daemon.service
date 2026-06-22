@@ -15,11 +15,6 @@ KillMode=mixed
 
 # Security Hardening
 NoNewPrivileges=true
-ProtectHostname=true
-ProtectControlGroups=true
-ProtectKernelTunables=true
-RestrictNamespaces=true
-RestrictRealtime=true
 
 [Install]
 WantedBy=graphical-session.target
