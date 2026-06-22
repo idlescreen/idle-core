@@ -14,7 +14,7 @@ if [ "$1" = "remove" ] || [ "$1" = "upgrade" ]; then
                 echo "-> Stopping service for: $user (UID: $uid)"
                 # Try runuser first (does not require systemd-machined)
                 if command -v runuser >/dev/null; then
-                    if runuser -u "$user" -- env XDG_RUNTIME_DIR="/run/user/$uid" DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus" systemctl --user stop trance-daemon.service || true; then
+                    if runuser -u "$user" -- env XDG_RUNTIME_DIR="/run/user/$uid" DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus" systemctl --user stop trance-daemon.service; then
                         echo "-> Service stopped successfully for $user via runuser"
                         continue
                     fi
