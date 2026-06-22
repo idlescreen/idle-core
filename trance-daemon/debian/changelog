@@ -1,3 +1,10 @@
+trance (0.3.2-1) flux; urgency=medium
+
+  * Upgrade to 0.3.2 version.
+  * Add diagnostic logs for D-Bus client authorization checks.
+
+ -- Screensavers Developer <dev@local76.org>  Sun, 21 Jun 2026 16:33:00 -1000
+
 trance (0.3.1-1) flux; urgency=medium
 
   * Upgrade to 0.3.1 version.
