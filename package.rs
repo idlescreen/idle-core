@@ -105,7 +105,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Compile and execute apt/update.rs on the fly using stable rustc
     println!("Compiling update.rs...");
     run_cmd(Command::new("rustc").args(["../packages/apt/update.rs", "-o", "../packages/apt/update_runner"]))?;
-    run_cmd(Command::new("../packages/apt/update_runner").current_dir("../packages/apt"))?;
+    run_cmd(Command::new("./update_runner").current_dir("../packages/apt"))?;
     let _ = fs::remove_file("../packages/apt/update_runner");
 
     println!("==========================================");
