@@ -143,6 +143,12 @@ impl TranceService {
         Ok(())
     }
 
+    /// DEPRECATED (2026) — no-op.
+    ///
+    /// The previous `trance-gpu` crate was renamed to `trance-upscaler`
+    /// and is now pure CPU code. We keep the D-Bus method to avoid
+    /// breaking existing clients (`trance config set gpu ...`,
+    /// `trance-applet` UI), but the parameter is ignored.
     async fn set_gpu_enabled(
         &self,
         _enabled: bool,

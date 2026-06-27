@@ -1,5 +1,5 @@
 [package]
-name = "trance-gpu"
+name = "trance-upscaler"
 version = "0.3.4"
 edition = "2024"
 description = "CPU upscaling for trance screensaver frames"

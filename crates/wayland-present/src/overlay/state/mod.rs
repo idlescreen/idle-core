@@ -32,7 +32,17 @@ impl SessionState {
 
     fn begin_presentation(&mut self) {
         self.visible.store(true, Ordering::SeqCst);
-        self.dismiss_grace_until = Some(Instant::now() + Duration::from_millis(800));
+        // 1-second grace window after the screensaver appears. Within this
+        // window, pointer motion and key presses do NOT dismiss the
+        // screensaver. This prevents the common case where the user
+        // finishing a key press / mousemove just as the idle timer
+        // expired would be instantly dismissed before they could
+        // perceive the screensaver at all.
+        //
+        // The previous 800ms window was slightly too short: on a slow
+        // monitor refresh or under load, the user could perceive the
+        // overlay for less than a frame before it vanished.
+        self.dismiss_grace_until = Some(Instant::now() + Duration::from_millis(1000));
         self.output_registry.clear();
         if self.pointer_serial != 0 {
             self.hide_pointer(self.pointer_serial);

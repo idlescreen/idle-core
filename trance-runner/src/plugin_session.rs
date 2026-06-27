@@ -7,7 +7,7 @@ use std::time::Duration;
 
 use libloading::Library;
 use trance_api::{Screensaver, ScreensaverInstance, TerminalCell};
-use trance_gpu::{resolve_render_scale, FilterMode, FrameUpscaler};
+use trance_upscaler::{resolve_render_scale, FilterMode, FrameUpscaler};
 
 use crate::cell_renderer::CellRenderer;
 use crate::launcher::{resolve_saver_binary, LaunchMode};
@@ -66,7 +66,7 @@ impl PluginSession {
         render_scale: Option<f32>,
     ) -> Result<Self, String> {
         let renderer = CellRenderer::new()?;
-        let use_gpu = gpu_enabled.unwrap_or_else(trance_gpu::gpu_enabled);
+        let use_gpu = gpu_enabled.unwrap_or_else(trance_upscaler::gpu_enabled);
         let render_scale = resolve_render_scale(use_gpu, render_scale);
         let upscaler = FrameUpscaler::new(use_gpu, FilterMode::from_env());
         if upscaler.using_gpu() {

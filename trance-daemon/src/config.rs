@@ -10,9 +10,13 @@ pub struct DaemonConfig {
     pub active_saver: Option<String>,
     pub idle_enabled: bool,
     pub idle_timeout_mins: u32,
+    /// **DEPRECATED** — no-op. Retained for back-compat with existing
+    /// `theme.yaml` files; the previous `trance-gpu` crate was renamed to
+    /// `trance-upscaler` and is now CPU-only. See `themes.yaml(5)`.
     pub gpu_enabled: bool,
     pub show_fps_overlay: bool,
-    /// Simulation grid scale override in `(0.25, 1.0]`; `None` uses GPU/CPU defaults.
+    /// Simulation grid scale override in `(0.25, 1.0]`; `None` uses CPU
+    /// defaults (the GPU path was removed in 2026).
     pub render_scale: Option<f32>,
 }
 
@@ -74,6 +78,15 @@ impl DaemonConfig {
                             }
                         }
                         "gpu_enabled" => {
+                            // DEPRECATED (2026): the previous `trance-gpu` crate
+                            // was renamed to `trance-upscaler` and is now pure
+                            // CPU code. `gpu_enabled` is a no-op; we accept the
+                            // value silently for back-compat with existing
+                            // theme.yaml files but ignore it. Logging would be
+                            // spammy on every daemon start, so no warning is
+                            // emitted here — the field is documented as
+                            // deprecated in `themes.yaml(5)`.
+                            let _ = val.parse::<bool>();
                             config.gpu_enabled = false;
                         }
                         "show_fps_overlay" => {

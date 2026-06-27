@@ -13,8 +13,28 @@ RestartSec=5
 TimeoutStopSec=10
 KillMode=mixed
 
-# Security Hardening
+# Security Hardening (2026)
+# Trance only needs:
+#   - AF_UNIX for D-Bus session bus
+#   - AF_INET/AF_INET6 for optional remote status queries (none today,
+#     but harmless to allow for future telemetry)
+# It does NOT need: filesystem writes outside the user's config dir,
+# /proc or /sys access, other user namespaces, raw sockets, or ptrace.
+# NOTE: ProtectHome=read-only still allows the user's XDG_RUNTIME_DIR
+# (needed for Wayland socket via /run/user/<uid>) because /run/user is
+# not part of /home on most distros. If your distro symlinks it, drop
+# the rule and rely on PrivateTmp instead.
 NoNewPrivileges=true
+ProtectSystem=strict
+PrivateTmp=true
+ProtectHome=read-only
+MemoryDenyWriteExecute=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+RestrictNamespaces=true
+LockPersonality=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+SystemCallArchitectures=native
 
 [Install]
 WantedBy=graphical-session.target

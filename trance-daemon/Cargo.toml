@@ -16,7 +16,7 @@ workspace = true
 trance-runner = { workspace = true }
 trance-api = { workspace = true }
 trance-dbus = { workspace = true }
-trance-gpu = { workspace = true }
+trance-upscaler = { workspace = true }
 wayland-idle = { workspace = true }
 wayland-present = { workspace = true }
 libc = { workspace = true }
@@ -34,7 +34,11 @@ changelog = "debian/changelog"
 copyright = "2026 Screensavers Developer <dev@local76.org>"
 maintainer = "Screensavers Developer <dev@local76.org>"
 extended-description = "Background idle monitoring service for trance screensavers."
-depends = "libc6, fonts-dejavu-core, trance-plugin-beams, dbus, libvulkan1 | libgl1"
+# NOTE (2026): `libvulkan1`/`libgl1` dependency removed — the previous
+# GPU upscaler was renamed to `trance-upscaler` and is now pure CPU code,
+# so neither graphics runtime is required at install time. Kept `dbus`
+# (session bus) and `trance-plugin-beams` (default saver).
+depends = "libc6, fonts-dejavu-core, trance-plugin-beams, dbus"
 recommends = "trance-plugins-all, trance-applet, trance-cli"
 section = "utils"
 priority = "optional"

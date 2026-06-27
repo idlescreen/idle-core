@@ -4,7 +4,7 @@ use std::sync::atomic::AtomicBool;
 use std::time::{Duration, Instant};
 
 use trance_api::{clear_caption, clear_primary_bounds};
-use trance_gpu::{simulation_tick_hz, target_fps};
+use trance_upscaler::{simulation_tick_hz, target_fps};
 use trance_runner::plugin_session::PluginSession;
 use wayland_present::OverlayPresenter;
 

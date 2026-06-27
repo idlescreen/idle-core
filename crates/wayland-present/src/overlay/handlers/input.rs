@@ -38,6 +38,11 @@ impl Dispatch<wl_pointer::WlPointer, ()> for SessionState {
                 }
             }
             wl_pointer::Event::Motion { .. } => {
+                // Within the 1-second grace window after begin_presentation,
+                // dismiss_from_input() is a no-op (see state/mod.rs). We
+                // still hide the cursor immediately so the user sees the
+                // screensaver without a visible pointer hovering over it;
+                // the grace window only suppresses the *dismiss* action.
                 if state.visible.load(Ordering::SeqCst) && state.pointer_serial != 0 {
                     state.hide_pointer(state.pointer_serial);
                 }

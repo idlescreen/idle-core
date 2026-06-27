@@ -1,10 +1,20 @@
 [workspace]
 resolver = "2"
+# NOTE (2026) — license inconsistency in this workspace:
+#   * Top-level `LICENSE` is Apache-2.0.
+#   * Every per-crate `Cargo.toml` declares `license = "MIT"`.
+# This is a known portfolio-level issue affecting the entire UberMetroid
+# fleet (see review `/tmp/reviews/03-desktop-trance.md`, item "LICENSE
+# mismatch"). The Cargo.toml `license` field is metadata only — the
+# binding license is the one in `LICENSE`. Until the user makes a
+# portfolio-level decision (likely align all Cargo.toml `license` fields
+# to "Apache-2.0"), do not change them locally without coordinating
+# across all 14+ crates in the workspace.
 members = [
     "crates/wayland-idle",
     "crates/wayland-present",
     "crates/trance-dbus",
-    "crates/trance-gpu",
+    "crates/trance-upscaler",
     "trance-api",
     "trance-runner",
     "trance-daemon",
@@ -27,7 +37,7 @@ zbus = { version = "5.12", default-features = false, features = ["tokio"] }
 trance-api = { path = "trance-api" }
 trance-dbus = { path = "crates/trance-dbus" }
 trance-runner = { path = "trance-runner" }
-trance-gpu = { path = "crates/trance-gpu" }
+trance-upscaler = { path = "crates/trance-upscaler" }
 wayland-idle = { path = "crates/wayland-idle" }
 wayland-present = { path = "crates/wayland-present" }
 

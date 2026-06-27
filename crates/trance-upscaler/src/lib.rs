@@ -1,6 +1,26 @@
 // SPDX-License-Identifier: MIT
 
 //! CPU upscaling for trance screensaver frames.
+//!
+//! **Note (2026):** This crate is named `trance-upscaler` (renamed from
+//! `trance-gpu` in this release). The historical name implied GPU
+//! acceleration, but the implementation is always CPU-based — see
+//! [`gpu_enabled`] which unconditionally returns `false`. The rename
+//! makes the actual behavior unambiguous.
+//!
+//! Two paths exist for upscaling a low-resolution simulation grid to the
+//! monitor's native resolution:
+//!
+//! 1. **Stretch** — fill the destination, distorting aspect ratio.
+//!    Used for the fullscreen screensaver presentation path.
+//! 2. **Letterbox** — preserve aspect ratio with black bars.
+//!    Used for preview windows and any path that respects the saver's
+//!    intended aspect.
+//!
+//! Both paths use the [`cpu`] module's nearest-neighbor / bilinear
+//! samplers. A future GPU backend (wgpu/Vulkan) could implement the same
+//! [`FrameUpscaler`] trait without changing call sites, but the work is
+//! not currently planned.
 
 mod cpu;
 
@@ -19,7 +39,15 @@ impl FilterMode {
     }
 }
 
-/// Whether GPU upscaling should be attempted (always false since GPU upscaling is removed).
+/// Whether GPU upscaling should be attempted.
+///
+/// **Always returns `false`.** This function exists only as a placeholder
+/// for historical callers that branched on GPU availability. The crate
+/// contains no GPU code; all upscaling is CPU-based (see [`cpu`]).
+///
+/// Callers that want a single source of truth for "use GPU?" should
+/// treat `gpu_enabled() == false` as the only supported answer until a
+/// real GPU backend is added.
 pub fn gpu_enabled() -> bool {
     false
 }
