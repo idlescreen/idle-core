@@ -19,30 +19,22 @@ Trance is a modular Wayland-native screensaver system for modern Linux desktops,
 
 ## Installation
 
+Register the repository first (see instructions in the [packages](https://github.com/UberMetroid/packages) repository). Then install via your system package manager:
+
+### Debian / Ubuntu / Pop!_OS (APT)
+
 ```bash
 sudo apt update
 sudo apt install trance
 ```
 
-`trance` always installs:
-- `trance-daemon`
-- `fonts-dejavu-core` (monospace font for rendering)
-- `trance-plugin-beams` (stock screensaver)
+*Note: A standard install pulls in recommended plugins (`trance-plugins-all`) and the COSMIC applet (`trance-applet`). For core + stock screensaver only, run `sudo apt install --no-install-recommends trance`.*
 
-A typical install also pulls in (via apt Recommends):
-- `trance-plugins-all` and the six optional screensaver plugins
-- `trance-applet`
-
-Core + stock saver only (no extra effects, no applet):
+### Fedora (DNF)
 
 ```bash
-sudo apt install --no-install-recommends trance
-```
-
-Install specific optional plugins:
-
-```bash
-sudo apt install trance-plugin-storm trance-plugin-glyphs
+sudo dnf check-update
+sudo dnf install trance
 ```
 
 ---
