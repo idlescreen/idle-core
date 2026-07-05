@@ -1,3 +1,10 @@
+trance (0.3.10-1) flux; urgency=medium
+
+  * Upgrade to 0.3.10 version.
+  * Add unit test coverage for the Screensaver D-Bus service.
+
+ -- Screensavers Developer <dev@local76.org>  Sat, 04 Jul 2026 19:18:00 -1000
+
 trance (0.3.9-1) flux; urgency=medium
 
   * Upgrade to 0.3.9 version.

@@ -105,3 +105,68 @@ impl ScreenSaverService {
             .send(DaemonCommand::StopPresentation);
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::config::DaemonConfig;
+    use crate::controller::DaemonCommand;
+
+    #[tokio::test]
+    async fn test_simulate_user_activity() {
+        let controller = Arc::new(DaemonController::new(DaemonConfig::default()));
+        let service = ScreenSaverService {
+            controller: controller.clone(),
+        };
+
+        service.simulate_user_activity().await;
+
+        let commands = controller.drain_commands();
+        assert_eq!(commands.len(), 1);
+        assert!(matches!(commands[0], DaemonCommand::StopPresentation));
+    }
+
+    #[tokio::test]
+    async fn test_get_active() {
+        let controller = Arc::new(DaemonController::new(DaemonConfig::default()));
+        let service = ScreenSaverService {
+            controller: controller.clone(),
+        };
+
+        assert!(!service.get_active().await);
+
+        controller.status.lock().unwrap().presentation_active = true;
+        assert!(service.get_active().await);
+    }
+
+    #[tokio::test]
+    async fn test_set_active() {
+        let controller = Arc::new(DaemonController::new(DaemonConfig::default()));
+        let service = ScreenSaverService {
+            controller: controller.clone(),
+        };
+
+        service.set_active(true).await;
+        let commands = controller.drain_commands();
+        assert_eq!(commands.len(), 1);
+        assert!(matches!(commands[0], DaemonCommand::Preview(_)));
+
+        service.set_active(false).await;
+        let commands = controller.drain_commands();
+        assert_eq!(commands.len(), 1);
+        assert!(matches!(commands[0], DaemonCommand::StopPresentation));
+    }
+
+    #[tokio::test]
+    async fn test_lock() {
+        let controller = Arc::new(DaemonController::new(DaemonConfig::default()));
+        let service = ScreenSaverService {
+            controller: controller.clone(),
+        };
+
+        service.lock().await;
+        let commands = controller.drain_commands();
+        assert_eq!(commands.len(), 1);
+        assert!(matches!(commands[0], DaemonCommand::StopPresentation));
+    }
+}
