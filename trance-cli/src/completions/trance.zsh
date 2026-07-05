@@ -31,7 +31,7 @@ _trance() {
         args)
             case "$line[1]" in
                 preview)
-                    _values "screensavers" "beams" "bursts" "chaos" "cosmos" "glyphs" "gnats" "storm"
+                    _values "screensavers" "beams" "bursts" "chaos" "cosmos" "glyphs" "gnats" "radar" "storm"
                     ;;
                 config)
                     _values "config actions" "get" "set" "list"

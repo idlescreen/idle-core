@@ -8,7 +8,7 @@ _trance_completion() {
 
     case "${prev}" in
         preview)
-            local savers="beams bursts chaos cosmos glyphs gnats storm"
+            local savers="beams bursts chaos cosmos glyphs gnats radar storm"
             COMPREPLY=( $(compgen -W "${savers}" -- ${cur}) )
             return 0
             ;;

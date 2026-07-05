@@ -21,6 +21,7 @@
 //! - **Cosmos**: Orbital gravity physics and orbital collapses.
 //! - **Glyphs**: Cryptographic/terminal falling character matrix.
 //! - **Gnats**: Kinetic swarm simulation.
+//! - **Radar**: Tactical air defense combat radar simulation.
 //! - **Storm**: Raining terminal storm with subtitles.
 //!
 //! ## Discovery
