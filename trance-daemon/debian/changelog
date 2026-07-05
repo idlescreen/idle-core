@@ -1,3 +1,10 @@
+trance (0.3.14-1) flux; urgency=medium
+
+  * Upgrade to 0.3.14 version.
+  * Audit and resolve dependency and advisory exceptions in deny.toml.
+
+ -- Screensavers Developer <dev@ubermetroid.org>  Sat, 04 Jul 2026 19:47:00 -1000
+
 trance (0.3.13-1) flux; urgency=medium
 
   * Upgrade to 0.3.13 version.
