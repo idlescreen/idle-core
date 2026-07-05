@@ -24,11 +24,11 @@ impl ScreenSaverService {
             application_name,
             reason_for_inhibit
         );
-        let cookie = self.controller.inhibitors.add(
+                let cookie = self.controller.inhibitors.add(
             application_name.to_string(),
             reason_for_inhibit.to_string(),
             sender.to_owned(),
-        );
+        ).map_err(|error| zbus::fdo::Error::LimitsExceeded(error.to_string()))?;
         let _ = self
             .controller
             .command_tx

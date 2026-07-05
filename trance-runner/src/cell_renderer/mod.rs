@@ -103,11 +103,11 @@ impl CellRenderer {
     }
 
     pub fn content_width(&self, cols: usize) -> u32 {
-        cols.saturating_mul(self.cell_width) as u32
+        cols.saturating_mul(self.cell_width).min(u32::MAX as usize) as u32
     }
 
     pub fn content_height(&self, rows: usize) -> u32 {
-        rows.saturating_mul(self.cell_height) as u32
+        rows.saturating_mul(self.cell_height).min(u32::MAX as usize) as u32
     }
 
     pub fn render(

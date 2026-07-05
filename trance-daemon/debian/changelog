@@ -1,3 +1,11 @@
+trance (0.3.13-1) flux; urgency=medium
+
+  * Upgrade to 0.3.13 version.
+  * Fix mathematical bounds, prevent integer overflows/truncation, and fix bilinear extrapolation.
+  * Restrict D-Bus auth path fallback to debug builds and enforce a limit on concurrent client inhibitors.
+
+ -- Screensavers Developer <dev@ubermetroid.org>  Sat, 04 Jul 2026 19:38:00 -1000
+
 trance (0.3.12-1) flux; urgency=medium
 
   * Upgrade to 0.3.12 version.

@@ -11,7 +11,11 @@ pub fn letterbox_into(
     offset_x: usize,
     offset_y: usize,
 ) -> Vec<u8> {
-    let mut framed = vec![0u8; (width * height * 4) as usize];
+    let needed = (width as usize)
+        .checked_mul(height as usize)
+        .and_then(|p| p.checked_mul(4))
+        .unwrap_or(0);
+    let mut framed = vec![0u8; needed];
     for row in 0..content_h as usize {
         let src_start = row * content_w as usize * 4;
         let src_end = src_start + content_w as usize * 4;

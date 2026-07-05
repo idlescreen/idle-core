@@ -60,7 +60,7 @@ fn is_trusted_control_peer(pid: u32) -> bool {
     let parent = target.parent().and_then(|p| p.to_str()).unwrap_or("");
     let is_ok = parent == "/usr/bin"
         || parent == "/usr/local/bin"
-        || {
+        || (cfg!(debug_assertions) && {
             if let Ok(current_exe) = std::env::current_exe() {
                 if let Ok(current_canonical) = std::fs::canonicalize(current_exe) {
                     let match_parent = target.parent() == current_canonical.parent();
@@ -79,7 +79,7 @@ fn is_trusted_control_peer(pid: u32) -> bool {
                 tracing::warn!("D-Bus auth check: failed to get current exe");
                 false
             }
-        };
+        });
     if !is_ok {
         tracing::warn!(
             "D-Bus auth check: path {:?} parent {:?} not trusted",

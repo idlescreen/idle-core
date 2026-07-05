@@ -54,16 +54,20 @@ impl InhibitorState {
         application_name: String,
         reason: String,
         client: UniqueName<'static>,
-    ) -> u32 {
-        let cookie = self.last_cookie.fetch_add(1, Ordering::Relaxed) + 1;
+    ) -> Result<u32, &'static str> {
         let mut inhibitors = self.inhibitors.lock().unwrap();
+        let count = inhibitors.iter().filter(|entry| entry.client == client).count();
+        if count >= 32 {
+            return Err("too many concurrent inhibitors for this client");
+        }
+        let cookie = self.last_cookie.fetch_add(1, Ordering::Relaxed) + 1;
         inhibitors.push(Inhibitor {
             cookie,
             application_name,
             reason,
             client,
         });
-        cookie
+        Ok(cookie)
     }
 
     /// Remove an inhibitor only when `cookie` belongs to `client`.

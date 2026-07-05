@@ -103,7 +103,11 @@ pub fn upscale_stretch_into(
 /// Fast integer nearest-neighbor stretch (allocates output).
 #[allow(dead_code)]
 pub fn upscale_stretch(src: &[u8], src_w: u32, src_h: u32, dst_w: u32, dst_h: u32) -> Vec<u8> {
-    let mut dst = vec![0u8; (dst_w * dst_h * 4) as usize];
+    let needed = (dst_w as usize)
+        .checked_mul(dst_h as usize)
+        .and_then(|p| p.checked_mul(4))
+        .unwrap_or(0);
+    let mut dst = vec![0u8; needed];
     let mut cache = StretchCache::new();
     upscale_stretch_into(&mut dst, src, src_w, src_h, dst_w, dst_h, &mut cache);
     dst
@@ -161,7 +165,11 @@ pub fn upscale_letterbox(
     dst_h: u32,
     filter: FilterMode,
 ) -> Vec<u8> {
-    let mut dst = vec![0u8; (dst_w * dst_h * 4) as usize];
+    let needed = (dst_w as usize)
+        .checked_mul(dst_h as usize)
+        .and_then(|p| p.checked_mul(4))
+        .unwrap_or(0);
+    let mut dst = vec![0u8; needed];
     upscale_letterbox_into(&mut dst, src, src_w, src_h, dst_w, dst_h, filter);
     dst
 }
@@ -180,12 +188,14 @@ fn sample_nearest(src: &[u8], width: u32, height: u32, x: f32, y: f32) -> [u8; 4
 }
 
 fn sample_bilinear(src: &[u8], width: u32, height: u32, x: f32, y: f32) -> [u8; 4] {
-    let x0 = x.floor().clamp(0.0, (width - 1) as f32) as u32;
-    let y0 = y.floor().clamp(0.0, (height - 1) as f32) as u32;
+    let x_clamped = x.clamp(0.0, (width - 1) as f32);
+    let y_clamped = y.clamp(0.0, (height - 1) as f32);
+    let x0 = x_clamped.floor() as u32;
+    let y0 = y_clamped.floor() as u32;
     let x1 = (x0 + 1).min(width - 1);
     let y1 = (y0 + 1).min(height - 1);
-    let tx = x - x0 as f32;
-    let ty = y - y0 as f32;
+    let tx = x_clamped - x0 as f32;
+    let ty = y_clamped - y0 as f32;
 
     let c00 = read_pixel(src, width, x0, y0);
     let c10 = read_pixel(src, width, x1, y0);
@@ -206,7 +216,7 @@ fn lerp(a: f32, b: f32, t: f32) -> f32 {
 }
 
 fn read_pixel(src: &[u8], width: u32, x: u32, y: u32) -> [u8; 4] {
-    let offset = ((y * width + x) * 4) as usize;
+    let offset = (y as usize * width as usize + x as usize) * 4;
     if offset + 3 >= src.len() {
         return [0, 0, 0, 255];
     }
@@ -219,7 +229,7 @@ fn read_pixel(src: &[u8], width: u32, x: u32, y: u32) -> [u8; 4] {
 }
 
 fn write_pixel(dst: &mut [u8], width: u32, x: u32, y: u32, color: [u8; 4]) {
-    let offset = ((y * width + x) * 4) as usize;
+    let offset = (y as usize * width as usize + x as usize) * 4;
     if offset + 3 >= dst.len() {
         return;
     }

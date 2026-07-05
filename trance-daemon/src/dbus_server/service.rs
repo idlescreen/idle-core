@@ -132,7 +132,7 @@ impl TranceService {
             application.to_string(),
             reason.to_string(),
             sender.to_owned(),
-        );
+        ).map_err(|error| zbus::fdo::Error::LimitsExceeded(error.to_string()))?;
         let _ = self
             .controller
             .command_tx
