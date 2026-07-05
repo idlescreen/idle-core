@@ -3,6 +3,7 @@
 //! D-Bus server for `com.local76.Trance`: configuration, preview, inhibit, status signals.
 
 mod auth;
+mod screensaver;
 mod service;
 mod watchers;
 
@@ -46,9 +47,18 @@ async fn serve(controller: Arc<DaemonController>) -> Result<(), String> {
             },
         )
         .map_err(|error| error.to_string())?
+        .serve_at(
+            "/org/freedesktop/ScreenSaver",
+            screensaver::ScreenSaverService {
+                controller: controller.clone(),
+            },
+        )
+        .map_err(|error| error.to_string())?
         .build()
         .await
         .map_err(|error| error.to_string())?;
+
+    let _ = connection.request_name("org.freedesktop.ScreenSaver").await;
 
     controller.set_dbus_connection(connection.clone());
 
