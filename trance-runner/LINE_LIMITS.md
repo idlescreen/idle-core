@@ -40,6 +40,6 @@ This project enforces a range of **25 to 250 lines** per source file to ensure r
 | [`src/toolkit/sys_info/mod.rs`](src/toolkit/sys_info/mod.rs) | 143 | ✅ OK |
 | [`src/toolkit/sys_info/monitors.rs`](src/toolkit/sys_info/monitors.rs) | 166 | ✅ OK |
 | [`src/toolkit/sys_info/theme.rs`](src/toolkit/sys_info/theme.rs) | 60 | ✅ OK |
-| [`src/toolkit/theme_query.rs`](src/toolkit/theme_query.rs) | 77 | ✅ OK |
+| [`src/toolkit/theme_query.rs`](src/toolkit/theme_query.rs) | 80 | ✅ OK |
 | [`src/trance_runner.rs`](src/trance_runner.rs) | 136 | ✅ OK |
-| [`src/trance_runner_fullscreen.rs`](src/trance_runner_fullscreen.rs) | 218 | ✅ OK |
+| [`src/trance_runner_fullscreen.rs`](src/trance_runner_fullscreen.rs) | 219 | ✅ OK |
