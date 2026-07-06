@@ -28,7 +28,7 @@ impl ThemeConfig {
         {
             return Some(
                 PathBuf::from(xdg_config)
-                    .join("ubermetroid")
+                    .join("trance")
                     .join("theme.yaml"),
             );
         }
@@ -36,7 +36,7 @@ impl ThemeConfig {
         Some(
             PathBuf::from(home)
                 .join(".config")
-                .join("ubermetroid")
+                .join("trance")
                 .join("theme.yaml"),
         )
     }

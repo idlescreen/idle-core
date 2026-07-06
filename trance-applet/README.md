@@ -20,7 +20,7 @@ The binary is installed at `/usr/bin/trance-applet` by the deb/rpm packages.
 
 ## Configuration
 
-`~/.config/ubermetroid/theme.yaml` (shared with the daemon).
+`~/.config/trance/theme.yaml` (shared with the daemon).
 
 ## See also
 

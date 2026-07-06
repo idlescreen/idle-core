@@ -5,8 +5,10 @@ use std::path::Path;
 
 pub const FONT_CANDIDATES: &[&str] = &[
     "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf",
+    "/usr/share/fonts/dejavu-sans-mono-fonts/DejaVuSansMono.ttf",
     "/usr/share/fonts/truetype/ubuntu/UbuntuMono-R.ttf",
     "/usr/share/fonts/truetype/liberation/LiberationMono-Regular.ttf",
+    "/usr/share/fonts/liberation-mono-fonts/LiberationMono-Regular.ttf",
 ];
 
 /// Returns the first installed monospace font used for cell rasterization.
