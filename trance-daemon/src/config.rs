@@ -11,8 +11,8 @@ pub struct DaemonConfig {
     pub idle_enabled: bool,
     pub idle_timeout_mins: u32,
     /// **DEPRECATED** — no-op. Retained for back-compat with existing
-    /// `theme.yaml` files; the previous `trance-gpu` crate was renamed to
-    /// `trance-upscaler` and is now CPU-only. See `themes.yaml(5)`.
+    /// `config.yaml` files; the previous `trance-gpu` crate was renamed to
+    /// `trance-upscaler` and is now CPU-only. See `config.yaml(5)`.
     #[deprecated(
         note = "GPU upscaler removed in 2026; field retained for back-compat, will be removed in 0.4"
     )]
@@ -42,14 +42,14 @@ impl DaemonConfig {
             .ok()
             .filter(|s| !s.is_empty())
         {
-            return Some(PathBuf::from(xdg_config).join("trance").join("theme.yaml"));
+            return Some(PathBuf::from(xdg_config).join("trance").join("config.yaml"));
         }
         let home = std::env::var("HOME").ok()?;
         Some(
             PathBuf::from(home)
                 .join(".config")
                 .join("trance")
-                .join("theme.yaml"),
+                .join("config.yaml"),
         )
     }
 
@@ -90,10 +90,10 @@ impl DaemonConfig {
                             // was renamed to `trance-upscaler` and is now pure
                             // CPU code. `gpu_enabled` is a no-op; we accept the
                             // value silently for back-compat with existing
-                            // theme.yaml files but ignore it. Logging would be
+                            // config.yaml files but ignore it. Logging would be
                             // spammy on every daemon start, so no warning is
                             // emitted here — the field is documented as
-                            // deprecated in `themes.yaml(5)`.
+                            // deprecated in `config.yaml(5)`.
                             let _ = val.parse::<bool>();
                             #[allow(deprecated)]
                             {

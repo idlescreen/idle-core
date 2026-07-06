@@ -29,7 +29,7 @@ impl ThemeConfig {
             return Some(
                 PathBuf::from(xdg_config)
                     .join("trance")
-                    .join("theme.yaml"),
+                    .join("config.yaml"),
             );
         }
         let home = std::env::var("HOME").ok()?;
@@ -37,7 +37,7 @@ impl ThemeConfig {
             PathBuf::from(home)
                 .join(".config")
                 .join("trance")
-                .join("theme.yaml"),
+                .join("config.yaml"),
         )
     }
 
