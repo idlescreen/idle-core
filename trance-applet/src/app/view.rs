@@ -61,7 +61,25 @@ impl AppModel {
             grid = grid.push(row);
         }
 
-        let header = widget::text("Trance Screensaver").size(16);
+        // Limit the plugin list container height and make it scrollable to avoid pop-up overflow
+        let scrollable_grid = cosmic::iced::widget::scrollable(grid)
+            .height(130.0);
+
+        let on_battery = trance_runner::toolkit::sys_info::get_system_info()
+            .power_status
+            .contains("Battery");
+
+        let mut header_row = cosmic::iced::widget::Row::new()
+            .spacing(8)
+            .align_y(cosmic::iced::Alignment::Center)
+            .push(widget::text("Trance Screensaver").size(16));
+
+        if on_battery {
+            header_row = header_row.push(
+                widget::text(" (Battery Saver Active)")
+                    .size(11)
+            );
+        }
 
         let decrease_btn = widget::button::standard("-").on_press(Message::DecreaseTimeout);
         let increase_btn = widget::button::standard("+").on_press(Message::IncreaseTimeout);
@@ -74,12 +92,36 @@ impl AppModel {
             .push(timeout_val)
             .push(increase_btn);
 
-        let actions = widget::button::standard("Power Settings")
+        // Render scale slider
+        let scale_val = widget::text(format!("{:.0}%", self.local_config.render_scale * 100.0));
+        let scale_slider = cosmic::iced::widget::Slider::new(
+            0.25..=1.0,
+            self.local_config.render_scale,
+            Message::ChangeRenderScale,
+        )
+        .step(0.05);
+
+        let scale_adjuster = cosmic::iced::widget::Row::new()
+            .spacing(8)
+            .align_y(cosmic::iced::Alignment::Center)
+            .push(scale_slider)
+            .push(scale_val);
+
+        let preview_btn = widget::button::standard("Preview Now")
             .width(cosmic::iced::Length::Fill)
-            .on_press(Message::OpenPowerSettings);
+            .on_press(Message::TriggerPreview);
+
+        let actions = cosmic::iced::widget::Column::new()
+            .spacing(6)
+            .push(preview_btn)
+            .push(
+                widget::button::standard("Power Settings")
+                    .width(cosmic::iced::Length::Fill)
+                    .on_press(Message::OpenPowerSettings)
+            );
 
         let content_list = widget::list_column()
-            .add(header)
+            .add(header_row)
             .add(widget::settings::item(
                 "Background Daemon",
                 widget::toggler(self.daemon_running).on_toggle(Message::ToggleDaemon),
@@ -90,11 +132,12 @@ impl AppModel {
                     .on_toggle(Message::ToggleIdleEnabled),
             ))
             .add(widget::settings::item("Idle Timeout", timeout_adjuster))
+            .add(widget::settings::item("Render Scale", scale_adjuster))
             .add(widget::settings::item(
                 "FPS Overlay",
                 widget::toggler(self.show_fps_overlay).on_toggle(Message::ToggleFpsOverlay),
             ))
-            .add(cosmic::iced::widget::container(grid).width(cosmic::iced::Length::Fill))
+            .add(cosmic::iced::widget::container(scrollable_grid).width(cosmic::iced::Length::Fill))
             .add(actions);
 
         self.core.applet.popup_container(content_list).into()

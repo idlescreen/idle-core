@@ -60,3 +60,10 @@ pub fn start_preview(name: &str) -> Result<()> {
         .preview(name)
         .context("failed to request screensaver preview")
 }
+
+pub fn set_render_scale(scale: f32) -> Result<()> {
+    TranceClient::connect()
+        .context("failed to connect to trance daemon")?
+        .set_render_scale(scale)
+        .context("failed to set render scale")
+}

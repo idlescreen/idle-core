@@ -19,6 +19,7 @@ pub struct ThemeConfig {
     pub idle_enabled: bool,
     pub gpu_enabled: bool,
     pub show_fps_overlay: bool,
+    pub render_scale: f32,
 }
 
 impl ThemeConfig {
@@ -50,6 +51,7 @@ impl ThemeConfig {
             idle_enabled: true,
             gpu_enabled: false,
             show_fps_overlay: false,
+            render_scale: 1.0,
         };
 
         if let Some(path) = Self::get_config_path()
@@ -97,6 +99,11 @@ impl ThemeConfig {
                                 config.show_fps_overlay = b;
                             }
                         }
+                        "render_scale" => {
+                            if let Ok(s) = val.parse::<f32>() {
+                                config.render_scale = s;
+                            }
+                        }
                         _ => {}
                     }
                 }
@@ -120,13 +127,15 @@ impl ThemeConfig {
                  active_saver: \"{}\"\n\
                  idle_enabled: {}\n\
                  gpu_enabled: false\n\
-                 show_fps_overlay: {}\n",
+                 show_fps_overlay: {}\n\
+                 render_scale: {}\n",
                 self.accent_color,
                 self.idle_timeout_mins,
                 self.theme_idx,
                 active_str,
                 self.idle_enabled,
-                self.show_fps_overlay
+                self.show_fps_overlay,
+                self.render_scale
             );
             fs::write(&path, content)?;
         }

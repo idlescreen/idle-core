@@ -20,6 +20,8 @@ pub enum Message {
     IncreaseTimeout,
     OpenPowerSettings,
     MiddleClick,
+    TriggerPreview,
+    ChangeRenderScale(f32),
 }
 
 // Popup lifecycle messages are handled before settings mutations in update().

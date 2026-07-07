@@ -18,6 +18,9 @@ impl AppModel {
                 };
                 self.gpu_enabled = false;
                 self.show_fps_overlay = status.show_fps_overlay;
+                if let Ok(scale) = status.render_scale.parse::<f32>() {
+                    self.local_config.render_scale = scale;
+                }
             }
             if let Ok(savers) = crate::daemon_client::list_savers() {
                 self.screensavers = savers;

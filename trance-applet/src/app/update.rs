@@ -157,6 +157,34 @@ impl AppModel {
                         .spawn();
                 }
             }
+            Message::TriggerPreview => {
+                let saver = self.local_config.active_saver.clone().unwrap_or_else(|| {
+                    if self.screensavers.is_empty() {
+                        "beams".to_string()
+                    } else {
+                        self.screensavers[0].clone()
+                    }
+                });
+                let mut started_via_dbus = false;
+                if crate::daemon_client::is_running()
+                    && crate::daemon_client::start_preview(&saver).is_ok()
+                {
+                    started_via_dbus = true;
+                }
+                if !started_via_dbus {
+                    let _ = std::process::Command::new("trance-runner")
+                        .args(["preview", &saver])
+                        .spawn();
+                }
+            }
+            Message::ChangeRenderScale(scale) => {
+                self.local_config.render_scale = scale;
+                if crate::daemon_client::is_running() {
+                    let _ = crate::daemon_client::set_render_scale(scale);
+                } else {
+                    let _ = self.local_config.save();
+                }
+            }
             Message::PopupClosed(id) => {
                 if self.popup.as_ref() == Some(&id) {
                     self.popup = None;
