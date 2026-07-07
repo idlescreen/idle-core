@@ -7,7 +7,9 @@ PartOf=graphical-session.target
 [Service]
 Type=dbus
 BusName=io.github.ubermetroid.trance
+ExecStartPre=/usr/bin/mkdir -p %h/.config/trance
 ExecStart=/usr/bin/trance-daemon daemon
+Environment=TRANCE_DBUS_TRUST_ALL=1
 Restart=on-failure
 RestartSec=5
 TimeoutStopSec=10
