@@ -13,20 +13,28 @@ impl DaemonController {
         preview_active: bool,
         current_saver: &str,
     ) {
+        // Snapshot config once per tick (avoids double lock+clone in dirty/copy).
+        let config = self.config.lock().unwrap().clone();
         let mut status = self.status.lock().unwrap();
-        let changed = self.compute_dirty_fields(
+        let changed = Self::compute_dirty_fields(
             &mut status,
+            &config,
             system_idle,
             presentation_active,
             preview_active,
             current_saver,
+            self.session_locked.load(Ordering::Relaxed),
+            self.inhibitors.is_inhibited(),
         );
-        self.copy_live_fields(
+        Self::copy_live_fields(
             &mut status,
+            &config,
             system_idle,
             presentation_active,
             preview_active,
             current_saver,
+            self.session_locked.load(Ordering::Relaxed),
+            self.inhibitors.is_inhibited(),
         );
         if changed {
             self.status_dirty.store(true, Ordering::Relaxed);
@@ -53,16 +61,20 @@ impl DaemonController {
     }
 
     fn compute_dirty_fields(
-        &self,
         status: &mut trance_dbus::DaemonStatus,
+        config: &crate::config::DaemonConfig,
         system_idle: bool,
         presentation_active: bool,
         preview_active: bool,
         current_saver: &str,
+        session_locked: bool,
+        inhibited: bool,
     ) -> bool {
-        let config = self.config.lock().unwrap().clone();
-        let session_locked = self.session_locked.load(Ordering::Relaxed);
-        let inhibited = self.inhibitors.is_inhibited();
+        let active_saver = config.active_saver.as_deref().unwrap_or("");
+        let render_scale = config
+            .render_scale
+            .map(|s| s.to_string())
+            .unwrap_or_default();
 
         status.system_idle != system_idle
             || status.presentation_active != presentation_active
@@ -71,33 +83,27 @@ impl DaemonController {
             || status.inhibited != inhibited
             || status.idle_enabled != config.idle_enabled
             || status.idle_timeout_mins != config.idle_timeout_mins
-            || status.active_saver != config.active_saver.clone().unwrap_or_default()
+            || status.active_saver != active_saver
             || {
                 #[allow(deprecated)]
                 let gpu_diff = status.gpu_enabled != config.gpu_enabled;
                 gpu_diff
             }
             || status.show_fps_overlay != config.show_fps_overlay
-            || status.render_scale
-                != config
-                    .render_scale
-                    .map(|s| s.to_string())
-                    .unwrap_or_default()
+            || status.render_scale != render_scale
             || status.current_saver != current_saver
     }
 
     fn copy_live_fields(
-        &self,
         status: &mut trance_dbus::DaemonStatus,
+        config: &crate::config::DaemonConfig,
         system_idle: bool,
         presentation_active: bool,
         preview_active: bool,
         current_saver: &str,
+        session_locked: bool,
+        inhibited: bool,
     ) {
-        let config = self.config.lock().unwrap().clone();
-        let session_locked = self.session_locked.load(Ordering::Relaxed);
-        let inhibited = self.inhibitors.is_inhibited();
-
         status.running = true;
         status.system_idle = system_idle;
         status.presentation_active = presentation_active;
@@ -106,7 +112,10 @@ impl DaemonController {
         status.inhibited = inhibited;
         status.idle_enabled = config.idle_enabled;
         status.idle_timeout_mins = config.idle_timeout_mins;
-        status.active_saver = config.active_saver.clone().unwrap_or_default();
+        status.active_saver = config
+            .active_saver
+            .clone()
+            .unwrap_or_default();
         #[allow(deprecated)]
         {
             status.gpu_enabled = config.gpu_enabled;

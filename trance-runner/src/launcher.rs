@@ -98,16 +98,48 @@ fn dev_plugin_dirs(clean: &str) -> Vec<PathBuf> {
 }
 
 /// True when `path` resolves under one of the trusted plugin directories.
+///
+/// Also rejects world-writable plugin files (mode `o+w`), which would let
+/// any local user plant a payload next to a legitimate allowlisted name.
 pub fn is_trusted_plugin_path(path: &Path, trusted_dirs: &[PathBuf]) -> bool {
+    let canonical_dirs: Vec<PathBuf> = trusted_dirs
+        .iter()
+        .filter_map(|dir| std::fs::canonicalize(dir).ok())
+        .collect();
+    is_trusted_plugin_path_cached(path, &canonical_dirs)
+}
+
+/// Like [`is_trusted_plugin_path`] but reuses already-canonicalized trust roots
+/// (avoids repeated `canonicalize` syscalls while scanning candidates).
+fn is_trusted_plugin_path_cached(path: &Path, canonical_trusted_dirs: &[PathBuf]) -> bool {
     let canonical = match std::fs::canonicalize(path) {
         Ok(path) => path,
         Err(_) => return false,
     };
-    trusted_dirs.iter().any(|dir| {
-        std::fs::canonicalize(dir)
-            .ok()
-            .is_some_and(|canonical_dir| canonical.starts_with(&canonical_dir))
-    })
+    if !canonical_trusted_dirs
+        .iter()
+        .any(|canonical_dir| canonical.starts_with(canonical_dir))
+    {
+        return false;
+    }
+
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        if let Ok(meta) = std::fs::metadata(&canonical) {
+            // Reject world-writable plugins.
+            if meta.permissions().mode() & 0o002 != 0 {
+                tracing::warn!(
+                    target: "plugin",
+                    path = %canonical.display(),
+                    "refusing world-writable plugin library"
+                );
+                return false;
+            }
+        }
+    }
+
+    true
 }
 
 fn trusted_plugin_dirs(clean: &str, mode: &LaunchMode) -> Vec<PathBuf> {
@@ -157,6 +189,11 @@ pub fn resolve_saver_binary(name: &str, mode: &LaunchMode) -> std::io::Result<Pa
     };
 
     let trusted_dirs = trusted_plugin_dirs(&clean, mode);
+    // Canonicalize trust roots once — not per candidate file.
+    let canonical_trusted: Vec<PathBuf> = trusted_dirs
+        .iter()
+        .filter_map(|dir| std::fs::canonicalize(dir).ok())
+        .collect();
     let dev_dirs = dev_plugin_dirs(&clean);
     let search_order: Vec<&Path> = if *mode == LaunchMode::Preview {
         dev_dirs
@@ -170,7 +207,7 @@ pub fn resolve_saver_binary(name: &str, mode: &LaunchMode) -> std::io::Result<Pa
 
     for base in search_order {
         if let Some(path) = find_in_dir(base)
-            && is_trusted_plugin_path(&path, &trusted_dirs)
+            && is_trusted_plugin_path_cached(&path, &canonical_trusted)
         {
             return Ok(path);
         }

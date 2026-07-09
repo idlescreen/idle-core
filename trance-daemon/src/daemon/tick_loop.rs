@@ -34,6 +34,7 @@ pub fn tick_loop_until_shutdown(controller: Arc<DaemonController>) -> anyhow::Re
             idle_monitor.set_timeout(timeout);
         }
 
+        // One config snapshot per tick for presentation decisions.
         let config = controller.config.lock().unwrap().clone();
         let system_idle = idle_monitor.is_idle();
         let session_locked = controller.session_locked.load(Ordering::Relaxed);
@@ -50,6 +51,8 @@ pub fn tick_loop_until_shutdown(controller: Arc<DaemonController>) -> anyhow::Re
             inhibited,
         );
 
+        // Reuses a fresh config lock inside update_live_state (status may need
+        // values that changed via D-Bus mid-tick).
         controller.update_live_state(
             system_idle,
             presentation.is_active(),

@@ -5,7 +5,8 @@
 use zbus::Connection;
 use zbus::message::Header;
 
-const TRUSTED_CONTROL_PEERS: &[&str] = &["trance", "trance-applet"];
+/// Basenames of processes allowed to call control methods on the daemon.
+const TRUSTED_CONTROL_PEERS: &[&str] = &["trance", "trance-applet", "trance-tui", "trance-cli"];
 
 #[cfg(test)]
 fn peer_exe_basename(pid: u32) -> Option<String> {
@@ -18,7 +19,12 @@ fn peer_exe_basename(pid: u32) -> Option<String> {
 }
 
 fn is_trusted_control_peer(pid: u32) -> bool {
-    if std::env::var("TRANCE_DBUS_TRUST_ALL").ok().as_deref() == Some("1") {
+    // Escape hatch is debug-only so release builds cannot be opened with
+    // `TRANCE_DBUS_TRUST_ALL=1` by a local attacker.
+    if cfg!(debug_assertions)
+        && std::env::var("TRANCE_DBUS_TRUST_ALL").ok().as_deref() == Some("1")
+    {
+        tracing::warn!("D-Bus auth: TRANCE_DBUS_TRUST_ALL=1 (debug build only)");
         return true;
     }
     let path = format!("/proc/{pid}/exe");
@@ -130,6 +136,10 @@ mod tests {
     fn trusted_peer_names_are_fixed() {
         assert!(TRUSTED_CONTROL_PEERS.contains(&"trance"));
         assert!(TRUSTED_CONTROL_PEERS.contains(&"trance-applet"));
+        assert!(TRUSTED_CONTROL_PEERS.contains(&"trance-tui"));
+        assert!(TRUSTED_CONTROL_PEERS.contains(&"trance-cli"));
+        assert!(!TRUSTED_CONTROL_PEERS.contains(&"bash"));
+        assert!(!TRUSTED_CONTROL_PEERS.contains(&"python3"));
     }
 
     #[test]

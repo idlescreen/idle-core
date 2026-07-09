@@ -1,12 +1,30 @@
 use super::launcher::{ALLOWED_SAVERS, is_allowed_saver};
 use std::path::PathBuf;
 
-/// Retrieve all trusted directories where screensavers are installed or placed.
-/// Supports standard system locations and user-specific directories following XDG specs.
+/// Retrieve directories where screensaver plugins may be installed.
+///
+/// **Order matters for resolution:** system paths are listed first so that
+/// distribution packages under `/usr` win over user-writable trees under
+/// `$HOME` / `$XDG_DATA_HOME`. A local overwrite in `~/.local` can still be
+/// used when no system plugin exists, but cannot shadow a package-installed
+/// `.so` of the same allowlisted name.
 pub fn get_screensaver_dirs() -> Vec<PathBuf> {
     let mut dirs = Vec::new();
 
-    // 1. User path: $XDG_DATA_HOME/trance/screensavers (fallback ~/.local/share/trance/screensavers)
+    // 1. System canonical paths (package-managed; preferred)
+    dirs.push(PathBuf::from("/usr/libexec/trance/screensavers"));
+    dirs.push(PathBuf::from("/usr/local/libexec/trance/screensavers"));
+
+    // 2. System paths from XDG_DATA_DIRS (fallback /usr/local/share, /usr/share)
+    let xdg_data_dirs = std::env::var("XDG_DATA_DIRS")
+        .unwrap_or_else(|_| "/usr/local/share:/usr/share".to_string());
+    for part in xdg_data_dirs.split(':') {
+        if !part.is_empty() {
+            dirs.push(PathBuf::from(part).join("trance").join("screensavers"));
+        }
+    }
+
+    // 3. User paths last (optional overrides only when system copy is absent)
     if let Ok(xdg_data) = std::env::var("XDG_DATA_HOME") {
         if !xdg_data.is_empty() {
             dirs.push(PathBuf::from(xdg_data).join("trance").join("screensavers"));
@@ -29,70 +47,74 @@ pub fn get_screensaver_dirs() -> Vec<PathBuf> {
         );
     }
 
-    // 2. System paths from XDG_DATA_DIRS (fallback /usr/local/share, /usr/share)
-    let xdg_data_dirs = std::env::var("XDG_DATA_DIRS")
-        .unwrap_or_else(|_| "/usr/local/share:/usr/share".to_string());
-    for part in xdg_data_dirs.split(':') {
-        if !part.is_empty() {
-            dirs.push(PathBuf::from(part).join("trance").join("screensavers"));
-        }
-    }
-
-    // 3. System canonical/historical paths
-    dirs.push(PathBuf::from("/usr/libexec/trance/screensavers"));
-    dirs.push(PathBuf::from("/usr/local/libexec/trance/screensavers"));
-
     dirs
 }
 
 /// Detects all screensavers by scanning the user and system directories for executables.
 /// Automatically falls back to the built-in ALLOWED_SAVERS list.
 pub fn detect_screensavers() -> Vec<String> {
-    let mut savers = Vec::new();
+    use std::collections::HashSet;
 
-    // Always start with built-in allowed list for fallback / guaranteed list
-    for s in ALLOWED_SAVERS {
-        savers.push(s.to_string());
-    }
+    // Built-in allowlist first for stable ordering / guaranteed presence.
+    let mut savers: Vec<String> = ALLOWED_SAVERS.iter().map(|s| (*s).to_string()).collect();
+    let mut seen: HashSet<String> = savers.iter().cloned().collect();
 
-    let dirs = get_screensaver_dirs();
-    for dir in dirs {
-        if let Ok(entries) = std::fs::read_dir(dir) {
-            for entry in entries.flatten() {
-                if let Ok(metadata) = entry.metadata()
-                    && metadata.is_file()
-                {
-                    #[cfg(unix)]
-                    {
-                        use std::os::unix::fs::PermissionsExt;
-                        let is_so = entry.path().extension().is_some_and(|ext| ext == "so");
-                        let is_exec = metadata.permissions().mode() & 0o111 != 0;
-                        if (is_so || is_exec)
-                            && let Some(name) = entry.file_name().to_str()
-                            && is_allowed_saver(name)
-                        {
-                            let clean_name = super::launcher::sanitize_saver_name(name).unwrap();
-                            if !savers.contains(&clean_name) {
-                                savers.push(clean_name);
-                            }
-                        }
-                    }
-                    #[cfg(not(unix))]
-                    {
-                        if let Some(name) = entry.file_name().to_str() {
-                            if is_allowed_saver(name) {
-                                let clean_name =
-                                    super::launcher::sanitize_saver_name(name).unwrap();
-                                if !savers.contains(&clean_name) {
-                                    savers.push(clean_name);
-                                }
-                            }
-                        }
-                    }
+    for dir in get_screensaver_dirs() {
+        let Ok(entries) = std::fs::read_dir(dir) else {
+            continue;
+        };
+        for entry in entries.flatten() {
+            let Ok(metadata) = entry.metadata() else {
+                continue;
+            };
+            if !metadata.is_file() {
+                continue;
+            }
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::PermissionsExt;
+                let is_so = entry.path().extension().is_some_and(|ext| ext == "so");
+                let is_exec = metadata.permissions().mode() & 0o111 != 0;
+                if !(is_so || is_exec) {
+                    continue;
                 }
+            }
+            let file_name = entry.file_name();
+            let Some(name) = file_name.to_str() else {
+                continue;
+            };
+            if !is_allowed_saver(name) {
+                continue;
+            }
+            // sanitize is infallible when is_allowed_saver returned true
+            let clean_name = super::launcher::sanitize_saver_name(name).unwrap_or_default();
+            if clean_name.is_empty() {
+                continue;
+            }
+            if seen.insert(clean_name.clone()) {
+                savers.push(clean_name);
             }
         }
     }
 
     savers
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn system_dirs_precede_user_dirs() {
+        // With HOME set and no XDG_DATA_HOME, /usr paths must appear before ~/.local.
+        let dirs = get_screensaver_dirs();
+        let usr = dirs.iter().position(|p| p.starts_with("/usr"));
+        let home = dirs.iter().position(|p| {
+            p.components().any(|c| c.as_os_str() == ".local")
+        });
+        assert!(usr.is_some(), "expected at least one /usr plugin dir");
+        if let (Some(u), Some(h)) = (usr, home) {
+            assert!(u < h, "system dirs must be searched before user dirs: {dirs:?}");
+        }
+    }
 }

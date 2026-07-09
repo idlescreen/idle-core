@@ -23,19 +23,23 @@ Trance is a modular Wayland-native screensaver system for modern Linux desktops,
 
 ### Debian / Ubuntu / Pop!_OS (APT)
 ```bash
-# 1. Download the repository GPG keyring and source list
-sudo curl -fsSL https://ubermetroid.github.io/packages/apt/ubermetroid-keyring.gpg -o /etc/apt/trusted.gpg.d/ubermetroid.gpg
-sudo curl -fsSL https://ubermetroid.github.io/packages/apt/ubermetroid.list -o /etc/apt/sources.list.d/ubermetroid.list
+# Prefer a dedicated keyring (not /etc/apt/trusted.gpg.d — that trusts the key for *all* repos)
+sudo mkdir -p /etc/apt/keyrings
+sudo curl -fsSL https://ubermetroid.github.io/packages/apt/ubermetroid-keyring.gpg \
+  -o /etc/apt/keyrings/ubermetroid.gpg
+echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/ubermetroid.gpg] https://ubermetroid.github.io/packages/apt stable main" \
+  | sudo tee /etc/apt/sources.list.d/ubermetroid.list
 
-# 2. Update and install
+# Update and install
 sudo apt update && sudo apt install trance
 ```
 *Note: Installs recommended plugins (`trance-plugins-all`) and the COSMIC applet (`trance-applet`). For the core package only: `sudo apt install --no-install-recommends trance`.*
 
 ### Fedora (DNF)
 ```bash
-# 1. Download the repository configuration
-sudo curl -fsSL https://ubermetroid.github.io/packages/rpm/ubermetroid.repo -o /etc/yum.repos.d/ubermetroid.repo
+# 1. Download the repository configuration (gpgcheck + repo_gpgcheck enabled)
+sudo curl -fsSL https://ubermetroid.github.io/packages/rpm/ubermetroid.repo \
+  -o /etc/yum.repos.d/ubermetroid.repo
 
 # 2. Update and install
 sudo dnf check-update && sudo dnf install trance

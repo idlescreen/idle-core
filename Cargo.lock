@@ -5104,14 +5104,14 @@ dependencies = [
 
 [[package]]
 name = "trance-api"
-version = "0.3.4"
+version = "0.3.5"
 dependencies = [
  "bytemuck",
 ]
 
 [[package]]
 name = "trance-applet"
-version = "0.3.25"
+version = "0.3.27"
 dependencies = [
  "anyhow",
  "i18n-embed",
@@ -5128,7 +5128,7 @@ dependencies = [
 
 [[package]]
 name = "trance-cli"
-version = "0.3.25"
+version = "0.3.27"
 dependencies = [
  "anyhow",
  "libc",
@@ -5140,7 +5140,7 @@ dependencies = [
 
 [[package]]
 name = "trance-daemon"
-version = "0.3.26"
+version = "0.3.27"
 dependencies = [
  "anyhow",
  "futures-lite",
@@ -5169,11 +5169,11 @@ dependencies = [
 
 [[package]]
 name = "trance-plugins-all"
-version = "0.3.25"
+version = "0.3.27"
 
 [[package]]
 name = "trance-runner"
-version = "0.2.16"
+version = "0.3.27"
 dependencies = [
  "crossterm",
  "fontdue",
@@ -5189,7 +5189,7 @@ dependencies = [
 
 [[package]]
 name = "trance-tui"
-version = "0.3.25"
+version = "0.3.27"
 dependencies = [
  "anyhow",
  "crossterm",
