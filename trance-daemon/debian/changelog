@@ -1,3 +1,10 @@
+trance (0.3.31-1) unstable; urgency=medium
+
+  * Security: bump ratatui to 0.30 / crossterm 0.29 so vulnerable lru 0.12.x is gone.
+  * trance-tui: concrete CrosstermBackend for ratatui 0.30 Error bounds.
+
+ -- UberMetroid <jerydleuck@gmail.com>  Thu, 09 Jul 2026 09:00:00 -1000
+
 trance (0.3.30-1) unstable; urgency=medium
 
   * UI polish: clearer daemon status in applet and TUI.
