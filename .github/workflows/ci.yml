@@ -1,5 +1,6 @@
 # CI for UberMetroid/trance
-# Requires repo Actions permission: selected (GitHub-owned + verified allowed).
+# Requires: Actions allow GitHub-owned actions (checkout, cache).
+# Required status checks on main: "Security advisories" and "Tests".
 name: CI
 
 on:
@@ -8,28 +9,53 @@ on:
   pull_request:
   workflow_dispatch:
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   CARGO_TERM_COLOR: always
   CARGO_INCREMENTAL: "0"
+  CARGO_DENY_VERSION: "0.20.2"
 
 jobs:
   advisories:
     name: Security advisories
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Install Rust
+      - name: Cache cargo registry + deny binary
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+            ~/.cargo/git
+            ~/.cargo/bin/cargo-deny
+          key: ${{ runner.os }}-deny-${{ env.CARGO_DENY_VERSION }}-${{ hashFiles('**/Cargo.lock', 'deny.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-deny-${{ env.CARGO_DENY_VERSION }}-
+            ${{ runner.os }}-deny-
+
+      - name: Install Rust (from rust-toolchain.toml)
         run: |
-          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain stable
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain none
           echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+          # Installs the pin in rust-toolchain.toml
+          rustup show
           rustc --version
           cargo --version
 
       - name: Install cargo-deny
-        run: cargo install cargo-deny --locked
+        run: |
+          if ! command -v cargo-deny >/dev/null 2>&1; then
+            cargo install cargo-deny --locked --version "${CARGO_DENY_VERSION}"
+          else
+            cargo-deny --version
+          fi
 
       - name: cargo deny check advisories
         run: cargo deny check advisories
@@ -50,10 +76,23 @@ jobs:
             libwayland-dev libxkbcommon-dev \
             libssl-dev
 
-      - name: Install Rust
+      - name: Cache cargo + build
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-test-${{ hashFiles('**/Cargo.lock', 'rust-toolchain.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-test-
+
+      - name: Install Rust (from rust-toolchain.toml)
         run: |
-          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain stable
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain none
           echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+          rustup show
           rustc --version
 
       # Skip trance-applet: optional COSMIC UI, huge libcosmic/wgpu build.
