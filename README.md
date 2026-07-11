@@ -1,20 +1,21 @@
-# Trance
-
 <p align="center">
-  <img src="assets/icon.png" width="96" height="96" alt="Trance">
+  <a href="https://github.com/crateria">
+    <img src="assets/crateria-header.jpg" alt="Crateria" width="800">
+  </a>
 </p>
 
-Wayland-native screensaver for Linux ([Crateria](https://github.com/crateria)).
+<p align="center">
+  <img src="assets/icon.png" width="72" height="72" alt="Trance">
+</p>
 
-A user-session daemon watches idle time and shows modular effects (beams, storm,
-radar, and more). Control it with the CLI, TUI, or optional COSMIC panel applet.
+# Trance
+
+Wayland-native screensaver for Linux. A user-session daemon watches idle time and shows modular effects (beams, storm, radar, and more). Control it with the CLI, TUI, or optional COSMIC panel applet.
 
 ## Install
 
-Add the [Crateria package repository](https://crateria.github.io/packages/) once,
-then install and enable the user service:
-
 Packages live at [crateria/packages](https://github.com/crateria/packages) (not in distro base repos).
+Add the repository once, install trance, then enable the user daemon.
 
 ### 1. Add the repo (once per machine)
 
