@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/crateria">
-    <img src="assets/crateria-header.jpg" alt="Crateria" width="800">
+    <img src="assets/crateria-header.jpg" alt="Crateria" width="100%">
   </a>
 </p>
 
@@ -10,7 +10,7 @@
 
 # Trance
 
-Wayland-native screensaver for Linux. A user-session daemon watches idle time and shows modular effects (beams, storm, radar, and more). Control it with the CLI, TUI, or optional COSMIC panel applet.
+Wayland-native screensaver for Linux. A user-session daemon watches idle time and shows modular effects. Control it with the CLI, TUI, or optional COSMIC panel applet.
 
 ## Install
 
