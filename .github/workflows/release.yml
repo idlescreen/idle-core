@@ -34,7 +34,8 @@ jobs:
           sudo apt-get install -y --no-install-recommends \
             libdbus-1-dev pkg-config \
             libwayland-dev libxkbcommon-dev \
-            libssl-dev
+            libssl-dev \
+            libpam0g-dev
 
       - name: Install Rust (from rust-toolchain.toml)
         run: |
