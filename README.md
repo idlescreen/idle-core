@@ -10,27 +10,71 @@
 
 Wayland-native modular screensaver daemon and desktop suite for Linux.
 
-## Documentation & Installation
+---
 
-For full installation guides, D-Bus API documentation, configurator tools, and TUI controls, visit:
-👉 **[https://crateria.github.io/](https://crateria.github.io/)**
+## Installation
 
-## Quick Start (Build & Run)
+Configure the repository and install the application packages.
+
+### Fedora / RHEL (DNF)
+```bash
+# Add repository configuration
+sudo curl -o /etc/yum.repos.d/crateria.repo https://crateria.github.io/packages/rpm/crateria.repo
+
+# Install all suite components
+sudo dnf install trance trance-cli trance-tui trance-applet
+```
+
+### Ubuntu / Debian (APT)
+```bash
+# Add keyring
+sudo curl -sSLo /etc/apt/keyrings/crateria.gpg https://crateria.github.io/packages/apt/crateria-keyring.gpg
+
+# Add sources list
+echo "deb [signed-by=/etc/apt/keyrings/crateria.gpg] https://crateria.github.io/packages/apt stable main" | sudo tee /etc/apt/sources.list.d/crateria.list
+
+# Install all suite components
+sudo apt update && sudo apt install trance trance-cli trance-tui trance-applet
+```
+
+---
+
+## CUI (Command Line Interface)
+
+Manage and interact with the screensaver daemon session via the terminal:
 
 ```bash
-# Clone the repository
-git clone https://github.com/crateria/trance.git
-cd trance
+# Query the current session status
+trance status
 
-# Build workspace release binaries
-cargo build --release
+# Lock the screensaver session immediately
+trance lock
 
-# Run the user-session daemon
-./target/release/trance-daemon
-
-# Control screensaver state via CLI
-./target/release/trance status
+# Reload plug-in configurations
+trance reload
 ```
+
+---
+
+## TUI (Terminal User Interface)
+
+Launch the interactive terminal dashboard to monitor daemon health, check logs, swap screensaver libraries, and configure simulation frame-rates dynamically:
+
+```bash
+trance-tui
+```
+
+---
+
+## COSMIC Panel Applet
+
+An integrated applet for the COSMIC Desktop bar (`cosmic-panel`). Toggle screensaver activation, lock the screen, or switch visual designs directly from your desktop interface:
+
+```bash
+trance-applet
+```
+
+---
 
 ## License
 
