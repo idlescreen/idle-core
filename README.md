@@ -41,18 +41,43 @@ sudo apt update && sudo apt install trance trance-cli trance-tui trance-applet
 
 ## CUI (Command Line Interface)
 
-Manage and interact with the screensaver daemon session via the terminal:
+Manage and interact with the screensaver daemon session via the terminal.
 
-```bash
-# Query the current session status
-trance status
+### Active Session Controls:
+* **`trance status`** (or `st`)  
+  Query session status (lock status, timeouts, inhibitors). Use `--json` for scripting.
+* **`trance enable`** / **`disable`** (or `on` / `off`)  
+  Toggle screensaver idle activation.
+* **`trance timeout <mins>`** (or `t`)  
+  Query or set the idle activation timeout length.
+* **`trance saver <plugin>`**  
+  Query or set the active default screensaver plugin.
+* **`trance preview <plugin>`** (or `p`)  
+  Instantly trigger a preview of the specified screensaver.
+* **`trance stop`**  
+  Dismiss any active screensaver presentation or running preview.
+* **`trance list`** (or `ls`)  
+  List all available screensaver plugin library names.
+* **`trance inhibitors`**  
+  List active D-Bus session inhibitors blocking screensaver activation.
+* **`trance render-scale <value>`** (or `scale`)  
+  Set pixel grid scale multiplier (e.g. `0.5`, `1.0`, `2.0`).
+* **`trance fps-overlay <on/off>`** (or `fps`)  
+  Toggle or query the live frame-rate counter overlay.
+* **`trance interactive`** (or `i`)  
+  Launch a lightweight interactive control prompt in your terminal.
 
-# Lock the screensaver session immediately
-trance lock
-
-# Reload plug-in configurations
-trance reload
-```
+### System Utilities:
+* **`trance doctor`** (or `doc`)  
+  Perform system health diagnostics (PAM config, DBus socket, group membership). Pass `--fix` to repair issues.
+* **`trance clean`**  
+  Purge orphaned system sockets, locks, and temporary log directories.
+* **`trance completion <shell>`**  
+  Generate tab-completion scripts (supports `bash`, `zsh`, `fish`).
+* **`trance bug-report`**  
+  Bundle system specifications, configs, and logs for debugging.
+* **`trance update`** (or `self-update`)  
+  Check for and apply client upgrades.
 
 ---
 
@@ -68,11 +93,14 @@ trance-tui
 
 ## COSMIC Panel Applet
 
-An integrated applet for the COSMIC Desktop bar (`cosmic-panel`). Toggle screensaver activation, lock the screen, or switch visual designs directly from your desktop interface:
+An integrated applet for the COSMIC Desktop bar (`cosmic-panel`). Toggle screensaver activation, lock the screen, or switch visual designs directly from your desktop interface.
 
-```bash
-trance-applet
-```
+### Adding to your panel:
+1. **Right-click** on your desktop panel/bar.
+2. Select **Add Applet**.
+3. Search for **Trance** and add it to your panel.
+
+*(Alternatively, run `trance-applet` in a terminal or startup script to launch the background panel process directly.)*
 
 ---
 
