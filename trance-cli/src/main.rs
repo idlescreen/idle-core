@@ -106,6 +106,16 @@ fn run(args: Vec<String>) -> Result<()> {
         "completion" => return completion::handle_completion(rest),
         "bug-report" => return bug_report::handle_bug_report(),
         "self-update" | "update" => return self_update::handle_self_update(),
+        "tui" => {
+            let mut cmd = std::process::Command::new("trance-tui");
+            cmd.args(rest);
+            let status = cmd.status().context("failed to execute trance-tui")?;
+            if status.success() {
+                return Ok(());
+            } else {
+                std::process::exit(status.code().unwrap_or(1));
+            }
+        }
         _ => {}
     }
 
