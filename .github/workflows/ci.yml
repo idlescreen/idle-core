@@ -1,11 +1,11 @@
 # CI for studio2201/trance
 # Requires: Actions allow GitHub-owned actions (checkout, cache).
-# Required status checks on main: "Security advisories" and "Tests".
+# Required status checks on master: "Security advisories" and "Tests".
 name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [master]
   pull_request:
   workflow_dispatch:
 
