@@ -7,13 +7,14 @@
 </p>
 
 <p align="center">
-  Part of <a href="https://github.com/crateria">Crateria</a> · Brand: <a href="https://github.com/crateria/brand">crateria/brand</a>
-  · Docs: <a href="https://crateria.github.io/">crateria.github.io</a>
+  Part of <a href="https://github.com/idlescreen">IdleScreen</a>
+  · Brand: <a href="https://github.com/idlescreen/brand">idlescreen/brand</a>
+  · Packages: <a href="https://idlescreen.github.io/packages/">idlescreen.github.io/packages</a>
 </p>
 
 <p align="center">
-  <a href="https://github.com/crateria/trance/actions/workflows/ci.yml"><img src="https://github.com/crateria/trance/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <a href="https://github.com/crateria/trance/security/advisories"><img src="https://img.shields.io/badge/security-private%20reporting-blue" alt="Security"></a>
+  <a href="https://github.com/idlescreen/trance/actions/workflows/ci.yml"><img src="https://github.com/idlescreen/trance/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/idlescreen/trance/security/advisories"><img src="https://img.shields.io/badge/security-private%20reporting-blue" alt="Security"></a>
 </p>
 
 ---
@@ -24,45 +25,43 @@
 
 ```bash
 sudo mkdir -p /etc/apt/keyrings
-sudo curl -fsSL https://crateria.github.io/packages/apt/crateria-keyring.gpg \
-  -o /etc/apt/keyrings/crateria.gpg
-echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/crateria.gpg] https://crateria.github.io/packages/apt stable main" \
-  | sudo tee /etc/apt/sources.list.d/crateria.list
+sudo curl -fsSL https://idlescreen.github.io/packages/apt/crateria-keyring.gpg \
+  -o /etc/apt/keyrings/idlescreen.gpg
+echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/idlescreen.gpg] https://idlescreen.github.io/packages/apt stable main" \
+  | sudo tee /etc/apt/sources.list.d/idlescreen.list
 sudo apt update && sudo apt install trance
 ```
 
 **Fedora:**
 
 ```bash
-sudo curl -fsSL https://crateria.github.io/packages/rpm/crateria.repo \
-  -o /etc/yum.repos.d/crateria.repo
+sudo curl -fsSL https://idlescreen.github.io/packages/rpm/crateria.repo \
+  -o /etc/yum.repos.d/idlescreen.repo
 sudo dnf install trance
 ```
 
-Package index: [crateria.github.io/packages](https://crateria.github.io/packages/)  
-Official plugins: [crateria/trance-plugins](https://github.com/crateria/trance-plugins)
+> Keyring/repo filenames on the server may still say `crateria-*` until rebranded; host is **idlescreen.github.io**.
+
+Package index: [idlescreen.github.io/packages](https://idlescreen.github.io/packages/)  
+Official plugins: [idlescreen/trance-plugins](https://github.com/idlescreen/trance-plugins)
 
 ---
 
 ### Build from source
 
 ```bash
-git clone https://github.com/crateria/trance.git
+git clone https://github.com/idlescreen/trance.git
 cd trance
 cargo build --release -p trance-daemon -p trance-cli -p trance-tui
 ```
 
 System deps (Debian/Ubuntu): `libdbus-1-dev libwayland-dev libxkbcommon-dev libssl-dev libpam0g-dev pkg-config`
 
-Checks: `cargo fmt --all -- --check && cargo clippy --workspace --all-targets && cargo test` (see CI).
-
 ---
 
 ### Releases
 
-1. Tag `vX.Y.Z` on `master` → **Release** workflow builds `.deb` / `.rpm` and publishes a GitHub Release.  
-2. Release workflow can **repository_dispatch** `crateria/packages` to import assets into the APT/DNF index.  
-3. Users install from [crateria.github.io/packages](https://crateria.github.io/packages/).
+Tag `vX.Y.Z` on `master` → release workflow builds packages and may dispatch **idlescreen/packages** (secret: `IDLESCREEN_PACKAGES_DISPATCH_TOKEN`).
 
 ---
 
@@ -87,17 +86,9 @@ trance-cli preview <plugin>
 
 ---
 
-### Architecture
-
-- **Wayland** — `ext-idle-notify-v1`, `ext-session-lock-v1`
-- **wgpu** cell rendering; PAM lock integration
-- **Plugins** — loadable effects ([trance-plugins](https://github.com/crateria/trance-plugins))
-
----
-
 ### Security
 
-Please use [private vulnerability reporting](https://github.com/crateria/trance/security/advisories/new) (do not file public issues for sensitive bugs). Org policy: [SECURITY.md](https://github.com/crateria/.github/blob/master/SECURITY.md).
+[Private vulnerability reporting](https://github.com/idlescreen/trance/security/advisories/new) · [SECURITY.md](https://github.com/idlescreen/.github/blob/main/SECURITY.md) (when published)
 
 ---
 

@@ -1,6 +1,6 @@
 [Unit]
 Description=Trance Screensaver Daemon
-Documentation=https://github.com/crateria/trance
+Documentation=https://github.com/idlescreen/trance
 After=graphical-session.target
 PartOf=graphical-session.target
 

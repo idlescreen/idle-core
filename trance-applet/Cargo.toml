@@ -4,7 +4,7 @@ version = "1.0.27"
 edition = "2024"
 license = "Apache-2.0"
 description = "COSMIC Desktop panel applet for the trance screensavers"
-repository = "https://github.com/crateria/trance"
+repository = "https://github.com/idlescreen/trance"
 
 [lints]
 workspace = true
