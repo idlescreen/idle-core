@@ -92,7 +92,6 @@ jobs:
             -p wayland-present \
             -p trance-daemon \
             -p trance-cli \
-            -p trance-tui \
             --all-features
 
       - name: Install cargo-binstall
@@ -110,15 +109,12 @@ jobs:
             -p trance-daemon \
             -p trance-cli \
             -p trance-plugins-all \
-            -p trance-tui
 
       - name: Verify package creation
         run: |
           cargo deb --no-build -p trance-daemon
           cargo deb --no-build -p trance-cli
           cargo deb --no-build -p trance-plugins-all
-          cargo deb --no-build -p trance-tui
           cargo generate-rpm -p trance-daemon
           cargo generate-rpm -p trance-cli
           cargo generate-rpm -p trance-plugins-all
-          cargo generate-rpm -p trance-tui

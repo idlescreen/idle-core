@@ -13,7 +13,6 @@ const CRATES: &[&str] = &[
     "trance-cli",
     "trance-plugins-all",
     "trance-applet",
-    "trance-tui",
 ];
 
 fn run_cmd(cmd: &mut Command) -> Result<(), String> {

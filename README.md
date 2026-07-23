@@ -13,7 +13,7 @@ Modular Wayland-native screensaver and ambient display daemon for Linux, written
 | Packages | [idlescreen.github.io/packages](https://idlescreen.github.io/packages/) |
 | Org | [idlescreen](https://github.com/idlescreen) |
 | Plugins | [official plugins](https://github.com/orgs/idlescreen/repositories?q=saver-) |
-| Optional applet | [idlescreen/idlescreen-applet](https://github.com/idlescreen/idle-core-applet) |
+| Optional applet | [idlescreen/app-cosmic](https://github.com/idlescreen/idle-core-applet) |
 
 ## Install (native packages)
 
@@ -41,8 +41,8 @@ historical `crateria-*` prefix; the public host is **idlescreen.github.io**.
 Shipped package and binary names remain `trance` / `trance-*` for install and
 API stability.
 
-Optional packages: `trance-plugins-all`, `trance-cli`, `trance-tui`. COSMIC panel
-users can install [idlescreen-applet](https://github.com/idlescreen/idle-core-applet)
+Optional packages: `trance-plugins-all`, `trance-cli` (TUI: [idle-tui](https://github.com/idlescreen/idle-tui)). COSMIC panel
+users can install [app-cosmic](https://github.com/idlescreen/idle-core-applet)
 separately.
 
 ## Build from source
@@ -50,7 +50,7 @@ separately.
 ```bash
 git clone https://github.com/idlescreen/idle-core.git
 cd idlescreen
-cargo build --release -p trance-daemon -p trance-cli -p trance-tui
+cargo build --release -p trance-daemon -p trance-cli
 ```
 
 System dependencies (Debian/Ubuntu): `libdbus-1-dev libwayland-dev libxkbcommon-dev libssl-dev libpam0g-dev pkg-config`
