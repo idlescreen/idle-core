@@ -2589,7 +2589,7 @@ dependencies = [
 
 [[package]]
 name = "trance-api"
-version = "1.0.27"
+version = "1.0.38"
 dependencies = [
  "bytemuck",
  "proptest",
@@ -2597,7 +2597,7 @@ dependencies = [
 
 [[package]]
 name = "trance-cli"
-version = "1.0.27"
+version = "1.0.38"
 dependencies = [
  "anyhow",
  "libc",
@@ -2609,7 +2609,7 @@ dependencies = [
 
 [[package]]
 name = "trance-daemon"
-version = "1.0.27"
+version = "1.0.38"
 dependencies = [
  "anyhow",
  "futures-lite",
@@ -2633,7 +2633,7 @@ dependencies = [
 
 [[package]]
 name = "trance-dbus"
-version = "0.3.62"
+version = "0.3.63"
 dependencies = [
  "tracing",
  "zbus",
@@ -2641,7 +2641,7 @@ dependencies = [
 
 [[package]]
 name = "trance-ipc"
-version = "0.3.64"
+version = "0.3.65"
 dependencies = [
  "libc",
  "proptest",
@@ -2651,11 +2651,11 @@ dependencies = [
 
 [[package]]
 name = "trance-plugins-all"
-version = "0.3.61"
+version = "0.3.62"
 
 [[package]]
 name = "trance-runner"
-version = "1.0.27"
+version = "1.0.38"
 dependencies = [
  "bytemuck",
  "crossterm",
@@ -2676,7 +2676,7 @@ dependencies = [
 
 [[package]]
 name = "trance-tui"
-version = "0.3.64"
+version = "0.3.65"
 dependencies = [
  "anyhow",
  "crossterm",
@@ -2687,7 +2687,7 @@ dependencies = [
 
 [[package]]
 name = "trance-upscaler"
-version = "0.3.61"
+version = "0.3.62"
 dependencies = [
  "bytemuck",
  "tracing",
@@ -2914,7 +2914,7 @@ dependencies = [
 
 [[package]]
 name = "wayland-idle"
-version = "0.3.61"
+version = "0.3.62"
 dependencies = [
  "libc",
  "tracing",
@@ -2924,7 +2924,7 @@ dependencies = [
 
 [[package]]
 name = "wayland-present"
-version = "0.3.62"
+version = "0.3.63"
 dependencies = [
  "libc",
  "tracing",
