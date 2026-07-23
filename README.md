@@ -13,8 +13,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/idlescreen/trance/actions/workflows/ci.yml"><img src="https://github.com/idlescreen/trance/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <a href="https://github.com/idlescreen/trance/security/advisories"><img src="https://img.shields.io/badge/security-private%20reporting-blue" alt="Security"></a>
+  <a href="https://github.com/idlescreen/idlescreen/actions/workflows/ci.yml"><img src="https://github.com/idlescreen/idlescreen/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/idlescreen/idlescreen/security/advisories"><img src="https://img.shields.io/badge/security-private%20reporting-blue" alt="Security"></a>
 </p>
 
 ---
@@ -43,14 +43,14 @@ sudo dnf install trance
 > Keyring/repo filenames on the server may still say `crateria-*` until rebranded; host is **idlescreen.github.io**.
 
 Package index: [idlescreen.github.io/packages](https://idlescreen.github.io/packages/)  
-Official plugins: [idlescreen/trance-plugins](https://github.com/idlescreen/trance-plugins)
+Official plugins: [idlescreen/trance-plugins](https://github.com/idlescreen/idlescreen-plugins)
 
 ---
 
 ### Build from source
 
 ```bash
-git clone https://github.com/idlescreen/trance.git
+git clone https://github.com/idlescreen/idlescreen.git
 cd trance
 cargo build --release -p trance-daemon -p trance-cli -p trance-tui
 ```
@@ -88,10 +88,18 @@ trance-cli preview <plugin>
 
 ### Security
 
-[Private vulnerability reporting](https://github.com/idlescreen/trance/security/advisories/new) · [SECURITY.md](https://github.com/idlescreen/.github/blob/main/SECURITY.md) (when published)
+[Private vulnerability reporting](https://github.com/idlescreen/idlescreen/security/advisories/new) · [SECURITY.md](https://github.com/idlescreen/.github/blob/main/SECURITY.md) (when published)
 
 ---
 
 ### License
 
 Apache-2.0. See [LICENSE](LICENSE).
+
+---
+
+### Official plugins
+
+Plugins are also published as standalone repositories:
+
+https://github.com/orgs/idlescreen/repositories?q=plugin-
