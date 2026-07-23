@@ -1,4 +1,4 @@
-# CI for crateria/trance
+# CI for idlescreen/trance
 name: CI
 
 on:
