@@ -8,16 +8,6 @@
 
 ---
 
-### Instant One-Line Install (Native Package Manager)
-
-On Debian, Ubuntu, Fedora, or RHEL:
-
-```bash
-curl -fsSL https://studio2201.github.io/packages/install.sh | sudo bash
-```
-
----
-
 ### Unraid NAS & Linux Container Deployment
 
 Run the official zero-dependency container:
