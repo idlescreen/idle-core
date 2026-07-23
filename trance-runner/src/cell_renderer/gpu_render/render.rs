@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-use super::gpu_init::{GpuCell, GpuCellRenderer, Uniforms};
+use super::super::gpu_init::{GpuCell, GpuCellRenderer, Uniforms};
 use trance_api::TerminalCell;
 
 impl GpuCellRenderer {
@@ -85,7 +85,7 @@ impl GpuCellRenderer {
             scanlines,
         );
 
-        let gpu_cells = super::gpu_cells::build_gpu_cells(
+        let gpu_cells = super::super::gpu_cells::build_gpu_cells(
             grid,
             grid_cols,
             col_start,
@@ -124,7 +124,7 @@ impl GpuCellRenderer {
         self.queue.submit(std::iter::once(encoder.finish()));
 
         if let Some(ref buf) = self.staging_buffer {
-            super::gpu_cells::copy_staging_to_out(
+            super::super::gpu_cells::copy_staging_to_out(
                 buf,
                 &self.device,
                 content_w,

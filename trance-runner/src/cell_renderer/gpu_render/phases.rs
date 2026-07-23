@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-//! Phase helpers for [`super::render::render`]. Each helper handles
-//! one step of the per-frame GPU pipeline; the orchestrator composes
-//! them in order.
+//! Phase helpers for [`super::super::GpuCellRenderer::render`]. Each
+//! helper handles one step of the per-frame GPU pipeline; the
+//! orchestrator composes them in order.
 
-use super::gpu_init::{GpuCellRenderer, Uniforms};
+use super::super::gpu_init::{GpuCellRenderer, Uniforms};
 
 impl GpuCellRenderer {
     /// Compute the row-aligned staging buffer size for the given
