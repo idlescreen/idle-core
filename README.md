@@ -1,36 +1,45 @@
 <h1 align="center">
-  <img src="assets/icon.png?v=1.0.31" width="48" height="48" valign="middle"> Trance
+  <img src="assets/icon.png" width="48" height="48" valign="middle"> Trance
 </h1>
 
 <p align="center">
-  <b>Modern modular Wayland screensaver and ambient display daemon for Linux written in Rust.</b>
+  <b>Modular Wayland-native screensaver and ambient display daemon for Linux, written in Rust.</b>
+</p>
+
+<p align="center">
+  Part of <a href="https://github.com/crateria">Crateria</a> — Linux desktop software in Rust.
 </p>
 
 ---
 
-### Instant One-Line Install (Native Package Manager)
+### Install (native packages)
 
-On Debian, Ubuntu, Fedora, or RHEL:
+On **Debian / Ubuntu / Pop!_OS**:
 
 ```bash
-curl -fsSL https://studio2201.github.io/packages/install.sh | sudo bash
+sudo mkdir -p /etc/apt/keyrings
+sudo curl -fsSL https://crateria.github.io/packages/apt/crateria-keyring.gpg \
+  -o /etc/apt/keyrings/crateria.gpg
+echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/crateria.gpg] https://crateria.github.io/packages/apt stable main" \
+  | sudo tee /etc/apt/sources.list.d/crateria.list
+sudo apt update
+sudo apt install trance
 ```
+
+On **Fedora**:
+
+```bash
+sudo curl -fsSL https://crateria.github.io/packages/rpm/crateria.repo \
+  -o /etc/yum.repos.d/crateria.repo
+sudo dnf install trance
+```
+
+Package index: [crateria.github.io/packages](https://crateria.github.io/packages/)  
+Official plugins: [crateria/trance-plugins](https://github.com/crateria/trance-plugins)
 
 ---
 
-### Unraid NAS & Linux Container Deployment
-
-Run the official zero-dependency container:
-
-```bash
-docker run -d --name trance --net=host -v /tmp/.X11-unix:/tmp/.X11-unix ghcr.io/studio2201/trance:latest
-```
-
----
-
-### Environment Configuration
-
-The daemon service can be customized using the following environment variables:
+### Environment configuration
 
 | Variable | Description | Default |
 | :--- | :--- | :---: |
@@ -41,26 +50,26 @@ The daemon service can be customized using the following environment variables:
 
 ---
 
-### Administration CLI & Control Utility
+### Administration CLI
 
-Every installation includes the `trance-cli` control binary.
-
-CLI Command Reference:
-- `trance-cli status` — Displays screensaver state and active plugin.
-- `trance-cli enable` — Enables automatic idle screensaver.
-- `trance-cli disable` — Disables automatic idle screensaver.
-- `trance-cli preview <plugin>` — Runs a full-screen preview of a specific screensaver.
+```bash
+trance-cli status              # screensaver state and active plugin
+trance-cli enable              # enable automatic idle screensaver
+trance-cli disable             # disable automatic idle screensaver
+trance-cli preview <plugin>    # full-screen preview of a plugin
+```
 
 ---
 
-### Architecture & Security
+### Architecture
 
-- **Native Wayland Integration**: Built on `ext-idle-notify-v1` and `ext-session-lock-v1` protocols.
-- **GPU Accelerated Cell Renderer**: High-efficiency wgpu rendering pipeline for cell-based visualizers.
-- **Fail-Safe PAM Authentication**: Secure screen lock integration with local PAM fallback authentication.
+- **Native Wayland** — `ext-idle-notify-v1` and `ext-session-lock-v1`
+- **GPU-accelerated rendering** — wgpu cell-based visualizers
+- **PAM lock integration** — secure screen lock with local fallback
+- **Plugin system** — loadable effects (see trance-plugins)
 
 ---
 
 ### License
 
-Distributed under the Apache 2.0 License. See [LICENSE](LICENSE) for details.
+Apache-2.0. See [LICENSE](LICENSE).
