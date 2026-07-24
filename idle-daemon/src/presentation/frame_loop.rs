@@ -36,6 +36,7 @@ struct FrameLoopState<'a> {
     frame_start: Instant,
     frame_counter: u64,
     fps_report: Instant,
+    achieved_fps: f32,
     use_hw_scaling: bool,
     session_start: Instant,
 }
