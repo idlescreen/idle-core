@@ -138,7 +138,10 @@ impl FrameUpscaler {
 
     fn ensure_stretch_buf(&mut self, src_w: u32, src_h: u32, dst_w: u32, dst_h: u32) {
         let dims = (src_w, src_h, dst_w, dst_h);
-        let needed = (dst_w * dst_h * 4) as usize;
+        let needed = (dst_w as usize)
+            .checked_mul(dst_h as usize)
+            .and_then(|p| p.checked_mul(4))
+            .unwrap_or(0);
         if self.stretch_dims != dims || self.stretch_buf.len() != needed {
             self.stretch_buf.resize(needed, 0);
             self.stretch_dims = dims;
@@ -147,7 +150,10 @@ impl FrameUpscaler {
 
     fn ensure_letterbox_buf(&mut self, src_w: u32, src_h: u32, dst_w: u32, dst_h: u32) {
         let dims = (src_w, src_h, dst_w, dst_h);
-        let needed = (dst_w * dst_h * 4) as usize;
+        let needed = (dst_w as usize)
+            .checked_mul(dst_h as usize)
+            .and_then(|p| p.checked_mul(4))
+            .unwrap_or(0);
         if self.letterbox_dims != dims || self.letterbox_buf.len() != needed {
             self.letterbox_buf.resize(needed, 0);
             self.letterbox_dims = dims;

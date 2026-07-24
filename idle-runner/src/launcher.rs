@@ -55,18 +55,18 @@ pub fn sanitize_saver_name(raw: &str) -> Option<String> {
         .unwrap_or(raw)
         .to_string();
 
-    if stem.starts_with("libscreensaver_") {
-        stem = stem["libscreensaver_".len()..].to_string();
-    } else if stem.starts_with("lib") {
-        stem = stem["lib".len()..].to_string();
+    if let Some(stripped) = stem.strip_prefix("libscreensaver_") {
+        stem = stripped.to_string();
+    } else if let Some(stripped) = stem.strip_prefix("lib") {
+        stem = stripped.to_string();
     }
 
-    if stem.starts_with("screensaver-") {
-        stem = stem["screensaver-".len()..].to_string();
+    if let Some(stripped) = stem.strip_prefix("screensaver-") {
+        stem = stripped.to_string();
     }
     // Package name form: idle-saver-beams → beams
-    if stem.starts_with("idle-saver-") {
-        stem = stem["idle-saver-".len()..].to_string();
+    if let Some(stripped) = stem.strip_prefix("idle-saver-") {
+        stem = stripped.to_string();
     }
 
     if !stem.chars().all(|c| c.is_ascii_alphanumeric() || c == '-') {

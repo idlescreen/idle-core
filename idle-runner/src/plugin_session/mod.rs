@@ -39,7 +39,7 @@ pub struct PluginSession {
     pub(crate) render_scale: f32,
     pub(crate) grid: Vec<TerminalCell>,
     pub(crate) content_buf: Vec<u8>,
-    pub(crate) pixel_buf: Vec<u8>,
+    pub(crate) pixel_buf: std::sync::Arc<Vec<u8>>,
     pub(crate) physics_accumulator: Duration,
     pub(crate) physics_duration: Duration,
     pub(crate) time_elapsed: Duration,
@@ -150,11 +150,10 @@ impl PluginSession {
     }
 
     #[tracing::instrument(skip_all, fields(cols, rows, width, height))]
-    pub fn render(&mut self, cols: usize, rows: usize, width: u32, height: u32) -> Vec<u8> {
+    pub fn render(&mut self, cols: usize, rows: usize, width: u32, height: u32) -> std::sync::Arc<Vec<u8>> {
         let scanlines = self.draw_frame(cols, rows);
         self.raster_viewport_internal(0, 0, cols, rows, cols, rows, width, height, scanlines);
-        let cap = self.pixel_buf.capacity();
-        std::mem::replace(&mut self.pixel_buf, Vec::with_capacity(cap))
+        self.pixel_buf.clone()
     }
 
     pub fn raster_viewport(
@@ -168,12 +167,11 @@ impl PluginSession {
         width: u32,
         height: u32,
         scanlines: bool,
-    ) -> Vec<u8> {
+    ) -> std::sync::Arc<Vec<u8>> {
         self.raster_viewport_internal(
             col_start, row_start, cols, rows, grid_cols, grid_rows, width, height, scanlines,
         );
-        let cap = self.pixel_buf.capacity();
-        std::mem::replace(&mut self.pixel_buf, Vec::with_capacity(cap))
+        self.pixel_buf.clone()
     }
 
     fn raster_viewport_internal(
@@ -188,7 +186,9 @@ impl PluginSession {
         height: u32,
         scanlines: bool,
     ) {
-        if self.hardware_scaling && !self.using_gpu_upscale() {
+        let hardware_scaling = self.hardware_scaling && !self.using_gpu_upscale();
+        let out_pixel_buf = std::sync::Arc::make_mut(&mut self.pixel_buf);
+        if hardware_scaling {
             self.renderer.render_content_viewport_into(
                 &self.grid,
                 grid_cols,
@@ -197,7 +197,7 @@ impl PluginSession {
                 cols,
                 rows,
                 scanlines,
-                &mut self.pixel_buf,
+                out_pixel_buf,
             );
             return;
         }
@@ -221,7 +221,7 @@ impl PluginSession {
             content_h,
             width,
             height,
-            &mut self.pixel_buf,
+            out_pixel_buf,
         );
     }
 }

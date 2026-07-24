@@ -112,7 +112,7 @@ pub fn blit_bitmap(
     color: (u8, u8, u8),
 ) {
     for row in 0..bitmap_h {
-        let py = y + row;
+        let py = y.saturating_add(row);
         if py >= height as usize {
             break;
         }
@@ -120,7 +120,7 @@ pub fn blit_bitmap(
         let row_pixel_start = (py * width as usize) * 4;
 
         for col in 0..bitmap_w {
-            let px = x + col;
+            let px = x.saturating_add(col);
             if px >= width as usize {
                 break;
             }

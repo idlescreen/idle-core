@@ -89,7 +89,7 @@ impl OverlayPresenter {
         let _ = self.command_tx.send(PresenterCommand::ShowScreensaver);
     }
 
-    pub fn submit_frame(&self, output_id: u32, width: u32, height: u32, pixels: Vec<u8>) {
+    pub fn submit_frame(&self, output_id: u32, width: u32, height: u32, pixels: Arc<Vec<u8>>) {
         let _ = self.command_tx.send(PresenterCommand::UpdateFrame {
             output_id,
             width,

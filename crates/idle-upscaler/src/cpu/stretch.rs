@@ -46,7 +46,10 @@ pub fn upscale_stretch_into(
     dst_h: u32,
     cache: &mut StretchCache,
 ) {
-    let needed = (dst_w * dst_h * 4) as usize;
+    let needed = (dst_w as usize)
+        .checked_mul(dst_h as usize)
+        .and_then(|p| p.checked_mul(4))
+        .unwrap_or(0);
     if dst.len() < needed {
         return;
     }

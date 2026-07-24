@@ -23,7 +23,7 @@ pub struct IpcPluginSession {
     upscaler: FrameUpscaler,
     pub(crate) grid: Vec<TerminalCell>,
     content_buf: Vec<u8>,
-    pixel_buf: Vec<u8>,
+    pixel_buf: std::sync::Arc<Vec<u8>>,
     hardware_scaling: bool,
 
     pub(crate) child: Option<Child>,
@@ -55,7 +55,7 @@ impl IpcPluginSession {
             upscaler,
             grid: Vec::new(),
             content_buf: Vec::new(),
-            pixel_buf: Vec::new(),
+            pixel_buf: std::sync::Arc::new(Vec::new()),
             hardware_scaling: false,
             child: None,
             socket: None,
@@ -186,7 +186,7 @@ impl IpcPluginSession {
         width: u32,
         height: u32,
         scanlines: bool,
-    ) -> Vec<u8> {
+    ) -> std::sync::Arc<Vec<u8>> {
         let using_gpu = self.using_gpu_upscale();
         let hardware_scaling = self.hardware_scaling;
         raster_viewport_into(
@@ -196,7 +196,7 @@ impl IpcPluginSession {
             hardware_scaling,
             using_gpu,
             &mut self.content_buf,
-            &mut self.pixel_buf,
+            std::sync::Arc::make_mut(&mut self.pixel_buf),
             col_start,
             row_start,
             cols,
@@ -206,7 +206,6 @@ impl IpcPluginSession {
             height,
             scanlines,
         );
-        let cap = self.pixel_buf.capacity();
-        std::mem::replace(&mut self.pixel_buf, Vec::with_capacity(cap))
+        self.pixel_buf.clone()
     }
 }

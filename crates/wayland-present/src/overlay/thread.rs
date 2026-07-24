@@ -22,7 +22,7 @@ pub enum PresenterCommand {
         output_id: u32,
         width: u32,
         height: u32,
-        pixels: Vec<u8>,
+        pixels: Arc<Vec<u8>>,
     },
     Hide,
 }

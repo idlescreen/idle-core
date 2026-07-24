@@ -125,7 +125,7 @@ impl PluginSession {
                 render_scale,
                 grid: Vec::new(),
                 content_buf: Vec::new(),
-                pixel_buf: Vec::new(),
+                pixel_buf: std::sync::Arc::new(Vec::new()),
                 physics_accumulator: Duration::ZERO,
                 physics_duration: Duration::from_secs_f32(1.0 / 120.0),
                 time_elapsed: Duration::ZERO,
