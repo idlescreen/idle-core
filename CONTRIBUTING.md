@@ -23,8 +23,8 @@ Default branch: `master`.
 ## Packaging names
 
 Brand is IdleScreen. Crate/binary/deb names may remain `trance*` for install
-stability. Applet packaging lives in `idlescreen/app-cosmic`; TUI in
-`idlescreen/app-tui`.
+stability. Applet packaging lives in `idlescreen/idle-cosmic`; TUI in
+`idlescreen/idle-tui`.
 
 ## Pull requests that cross a boundary
 

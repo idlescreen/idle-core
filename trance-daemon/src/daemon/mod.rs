@@ -51,9 +51,9 @@ fn check_wayland_env() -> anyhow::Result<()> {
 
 fn pid_file_path() -> std::path::PathBuf {
     if let Ok(runtime_dir) = std::env::var("XDG_RUNTIME_DIR") {
-        std::path::PathBuf::from(runtime_dir).join("idlescreen-daemon.pid")
+        std::path::PathBuf::from(runtime_dir).join("idle-daemon.pid")
     } else {
-        std::env::temp_dir().join("idlescreen-daemon.pid")
+        std::env::temp_dir().join("idle-daemon.pid")
     }
 }
 
@@ -70,7 +70,7 @@ fn acquire_pidfile() -> anyhow::Result<Option<std::path::PathBuf>> {
     {
         unsafe {
             if libc::kill(pid, 0) == 0 && pid != std::process::id() as i32 {
-                tracing::warn!("idlescreen-daemon is already running (pid {pid}). Exiting.");
+                tracing::warn!("idle-daemon is already running (pid {pid}). Exiting.");
                 return Ok(None);
             }
         }
@@ -99,11 +99,11 @@ fn install_signal_handlers(controller: &Arc<DaemonController>) -> anyhow::Result
 }
 
 fn log_daemon_startup() {
-    tracing::info!("idlescreen-daemon running (pid {})...", std::process::id());
+    tracing::info!("idle-daemon running (pid {})...", std::process::id());
     if cfg!(debug_assertions) {
         tracing::warn!(
             "WARNING — debug build is very slow (~1 FPS). \
-             Use target/release/idlescreen-daemon for real performance."
+             Use target/release/idle-daemon for real performance."
         );
     }
 }

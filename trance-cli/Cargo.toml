@@ -1,9 +1,13 @@
 [package]
 name = "trance-cli"
-version = "2.0.1"
+version = "2.1.0"
 edition = "2024"
 description = "Command-line interface for the IdleScreen daemon"
 license = "Apache-2.0"
+
+[[bin]]
+name = "idle"
+path = "src/main.rs"
 
 [[bin]]
 name = "idlescreen"
@@ -29,41 +33,45 @@ tracing-subscriber = { workspace = true }
 tracing-journald = { workspace = true, optional = true }
 
 [package.metadata.deb]
-name = "idlescreen-cli"
+name = "idle-cli"
 changelog = "debian/changelog"
 copyright = "2026 IdleScreen"
 maintainer = "IdleScreen <jerydleuck@gmail.com>"
-extended-description = "CLI for controlling the IdleScreen daemon over D-Bus."
-depends = "libc6, idlescreen"
-provides = "trance-cli"
-replaces = "trance-cli"
-conflicts = "trance-cli (<< 2.0.0)"
+extended-description = "CLI for controlling the Idle daemon over D-Bus (command: idle)."
+depends = "libc6, idle"
+provides = "idlescreen-cli, trance-cli"
+replaces = "idlescreen-cli, trance-cli"
+conflicts = "idlescreen-cli (<< 2.1.0), trance-cli (<< 2.0.0)"
 section = "utils"
 priority = "optional"
 assets = [
+    ["target/release/idle", "usr/bin/idle", "755"],
     ["target/release/idlescreen", "usr/bin/idlescreen", "755"],
     ["target/release/trance", "usr/bin/trance", "755"],
-    ["trance.1", "usr/share/man/man1/idlescreen.1", "644"],
+    ["trance.1", "usr/share/man/man1/idle.1", "644"],
 ]
 
 [package.metadata.generate-rpm]
-name = "idlescreen-cli"
+name = "idle-cli"
 release = "1"
 arch = "x86_64"
-summary = "IdleScreen command-line interface"
-description = "CLI for controlling the IdleScreen daemon over D-Bus."
+summary = "IdleScreen CLI (idle)"
+description = "CLI for controlling the Idle daemon over D-Bus."
 license = "Apache-2.0"
 assets = [
+    { source = "target/release/idle", dest = "/usr/bin/idle", mode = "755", user = "root", group = "root" },
     { source = "target/release/idlescreen", dest = "/usr/bin/idlescreen", mode = "755", user = "root", group = "root" },
     { source = "target/release/trance", dest = "/usr/bin/trance", mode = "755", user = "root", group = "root" },
-    { source = "trance.1", dest = "/usr/share/man/man1/idlescreen.1", mode = "644", user = "root", group = "root" },
+    { source = "trance.1", dest = "/usr/share/man/man1/idle.1", mode = "644", user = "root", group = "root" },
 ]
 
 [package.metadata.generate-rpm.requires]
-idlescreen = "*"
+idle = "*"
 
 [package.metadata.generate-rpm.provides]
+idlescreen-cli = "*"
 trance-cli = "*"
 
 [package.metadata.generate-rpm.obsoletes]
+idlescreen-cli = "*"
 trance-cli = "*"

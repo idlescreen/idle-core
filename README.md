@@ -13,18 +13,18 @@ Modular Wayland-native screensaver and ambient display daemon for Linux, written
 | Packages | [idlescreen.github.io/packages](https://idlescreen.github.io/packages/) |
 | Org | [idlescreen](https://github.com/idlescreen) |
 | Plugins | [official plugins](https://github.com/orgs/idlescreen/repositories?q=saver-) |
-| Optional applet | [idlescreen/app-cosmic](https://github.com/idlescreen/app-cosmic) |
+| Optional applet | [idlescreen/idle-cosmic](https://github.com/idlescreen/idle-cosmic) |
 
 ## Install (native packages)
 
 ### COSMIC product (recommended on COSMIC Desktop)
 
 ```bash
-sudo dnf install app-cosmic   # Fedora
-sudo apt install app-cosmic   # Debian/Pop
+sudo dnf install idle-cosmic   # Fedora
+sudo apt install idle-cosmic   # Debian/Pop
 ```
 
-Pulls `idlescreen` (idle-core daemon), `idlescreen-savers` (all plugins), and the COSMIC applet.
+Pulls `idlescreen` (idle-core daemon), `idle-savers` (all plugins), and the COSMIC applet.
 
 ### Debian / Ubuntu / Pop!_OS
 
@@ -34,8 +34,8 @@ sudo curl -fsSL https://idlescreen.github.io/packages/apt/crateria-keyring.gpg \
   -o /etc/apt/keyrings/idlescreen.gpg
 echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/idlescreen.gpg] https://idlescreen.github.io/packages/apt stable main" \
   | sudo tee /etc/apt/sources.list.d/idlescreen.list
-sudo apt update && sudo apt install app-cosmic   # COSMIC product (daemon+savers+applet)
-# or: sudo apt install idlescreen
+sudo apt update && sudo apt install idle-cosmic   # COSMIC product (daemon+savers+applet)
+# or: sudo apt install idle
 ```
 
 ### Fedora
@@ -43,16 +43,16 @@ sudo apt update && sudo apt install app-cosmic   # COSMIC product (daemon+savers
 ```bash
 sudo curl -fsSL https://idlescreen.github.io/packages/rpm/crateria.repo \
   -o /etc/yum.repos.d/idlescreen.repo
-sudo dnf install idlescreen
+sudo dnf install idle
 ```
 
 Keyring and repository drop-in filenames on the package host may still use a
 historical `crateria-*` prefix; the public host is **idlescreen.github.io**.
-Shipped package and binary names remain `idlescreen` / `idlescreen-*` (legacy `trance*` still provided) for install and
+Shipped package: **idle** (daemon), **idle-cli** (command `idle`). Legacy idlescreen/trance names are Provided/Obsoleted.
 API stability.
 
-Optional packages: `trance-plugins-all`, `trance-cli` (TUI: [app-tui](https://github.com/idlescreen/app-tui)). COSMIC panel
-users can install [app-cosmic](https://github.com/idlescreen/app-cosmic)
+Optional packages: `trance-plugins-all`, `trance-cli` (TUI: [idle-tui](https://github.com/idlescreen/idle-tui)). COSMIC panel
+users can install [idle-cosmic](https://github.com/idlescreen/idle-cosmic)
 separately.
 
 ## Build from source
@@ -60,7 +60,7 @@ separately.
 ```bash
 git clone https://github.com/idlescreen/idle-core.git
 cd idle-core
-cargo build --release -p trance-daemon -p trance-cli  # binaries: idlescreen-daemon, idlescreen
+cargo build --release -p trance-daemon -p trance-cli  # binaries: idle-daemon, idlescreen
 ```
 
 System dependencies (Debian/Ubuntu): `libdbus-1-dev libwayland-dev libxkbcommon-dev libssl-dev libpam0g-dev pkg-config`
@@ -114,7 +114,7 @@ session-level implant:
 ## Administration CLI
 
 ```bash
-idlescreen status
+idle status
 idlescreen enable | disable
 idlescreen preview <plugin>
 idlescreen doctor

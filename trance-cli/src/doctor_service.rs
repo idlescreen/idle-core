@@ -25,14 +25,14 @@ pub fn check_dbus() -> CheckResult {
         chk(
             "D-Bus Service",
             false,
-            "cannot connect to io.github.ubermetroid.trance; start idlescreen-daemon",
+            "cannot connect to io.github.ubermetroid.trance; start idle-daemon",
         )
     }
 }
 
 pub fn check_systemd_service() -> CheckResult {
     let output = Command::new("systemctl")
-        .args(["--user", "is-active", "idlescreen-daemon.service"])
+        .args(["--user", "is-active", "idle-daemon.service"])
         .output();
 
     match output {
@@ -44,7 +44,7 @@ pub fn check_systemd_service() -> CheckResult {
                 chk(
                     "Systemd Service",
                     false,
-                    format!("status '{status}'; run systemctl --user start idlescreen-daemon"),
+                    format!("status '{status}'; run systemctl --user start idle-daemon"),
                 )
             }
         }
@@ -77,8 +77,8 @@ pub fn check_running_pid() -> CheckResult {
 
 fn pid_file_path() -> PathBuf {
     if let Ok(runtime_dir) = std::env::var("XDG_RUNTIME_DIR") {
-        PathBuf::from(runtime_dir).join("idlescreen-daemon.pid")
+        PathBuf::from(runtime_dir).join("idle-daemon.pid")
     } else {
-        std::env::temp_dir().join("idlescreen-daemon.pid")
+        std::env::temp_dir().join("idle-daemon.pid")
     }
 }

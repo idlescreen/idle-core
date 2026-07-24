@@ -11,7 +11,7 @@ fn sanitize_accepts_clean_names() {
         Some("beams".to_string())
     );
     assert_eq!(
-        sanitize_saver_name("screensaver-storm"),
+        sanitize_saver_name("screenidle-saver-storm"),
         Some("storm".to_string())
     );
 }
@@ -117,7 +117,7 @@ fn sanitize_accepts_alphanumeric_and_dash() {
 #[test]
 fn sanitize_strips_screensaver_prefix_only() {
     assert_eq!(
-        sanitize_saver_name("screensaver-bursts"),
+        sanitize_saver_name("screenidle-saver-bursts"),
         Some("bursts".to_string())
     );
     assert_eq!(

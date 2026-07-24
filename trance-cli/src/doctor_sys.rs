@@ -16,7 +16,7 @@ pub fn check_fonts() -> CheckResult {
 }
 
 pub fn check_package_install() -> CheckResult {
-    for pkg in ["idlescreen", "trance"] {
+    for pkg in ["idle", "idlescreen", "trance"] {
         if let Ok(o) = Command::new("rpm")
             .args(["-q", pkg, "--qf", "%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}"])
             .output()
@@ -38,7 +38,7 @@ pub fn check_package_install() -> CheckResult {
             return chk("Package", true, ver);
         }
     }
-    println!(" [!] Package: idlescreen not found via RPM or dpkg.");
+    println!(" [!] Package: idle not found via RPM or dpkg.");
     println!("     -> Install from https://idlescreen.github.io/packages/");
     chk("Package", true, "not a system package")
 }

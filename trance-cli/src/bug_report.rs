@@ -32,7 +32,7 @@ pub fn handle_bug_report() -> Result<()> {
     // Daemon & Service Status
     report.push_str("#### Service Status\n");
     let active_status = Command::new("systemctl")
-        .args(["--user", "is-active", "idlescreen-daemon"])
+        .args(["--user", "is-active", "idle-daemon"])
         .output()
         .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string())
         .unwrap_or_else(|_| "unknown".to_string());
@@ -62,7 +62,7 @@ pub fn handle_bug_report() -> Result<()> {
         .args([
             "--user",
             "-u",
-            "idlescreen-daemon",
+            "idle-daemon",
             "-n",
             "20",
             "--no-pager",
@@ -129,7 +129,7 @@ fn get_config_path() -> Option<PathBuf> {
     {
         return Some(
             PathBuf::from(xdg_config)
-                .join("idlescreen")
+                .join("idle")
                 .join("config.yaml"),
         );
     }
@@ -137,7 +137,7 @@ fn get_config_path() -> Option<PathBuf> {
     Some(
         PathBuf::from(home)
             .join(".config")
-            .join("idlescreen")
+            .join("idle")
             .join("config.yaml"),
     )
 }

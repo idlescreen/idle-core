@@ -68,7 +68,7 @@ fn get_config_path() -> Option<PathBuf> {
     {
         return Some(
             PathBuf::from(xdg_config)
-                .join("idlescreen")
+                .join("idle")
                 .join("config.yaml"),
         );
     }
@@ -76,7 +76,7 @@ fn get_config_path() -> Option<PathBuf> {
     Some(
         PathBuf::from(home)
             .join(".config")
-            .join("idlescreen")
+            .join("idle")
             .join("config.yaml"),
     )
 }

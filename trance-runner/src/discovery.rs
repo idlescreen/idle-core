@@ -12,6 +12,8 @@ pub fn get_screensaver_dirs() -> Vec<PathBuf> {
     let mut dirs = Vec::new();
 
     // 1. System canonical paths (IdleScreen first; trance legacy still searched)
+    dirs.push(PathBuf::from("/usr/libexec/idle/screensavers"));
+    dirs.push(PathBuf::from("/usr/local/libexec/idle/screensavers"));
     dirs.push(PathBuf::from("/usr/libexec/idlescreen/screensavers"));
     dirs.push(PathBuf::from("/usr/local/libexec/idlescreen/screensavers"));
     dirs.push(PathBuf::from("/usr/libexec/trance/screensavers"));
@@ -22,7 +24,7 @@ pub fn get_screensaver_dirs() -> Vec<PathBuf> {
         .unwrap_or_else(|_| "/usr/local/share:/usr/share".to_string());
     for part in xdg_data_dirs.split(':') {
         if !part.is_empty() {
-            dirs.push(PathBuf::from(part).join("idlescreen").join("screensavers"));
+            dirs.push(PathBuf::from(part).join("idle").join("screensavers"));
             dirs.push(PathBuf::from(part).join("trance").join("screensavers"));
         }
     }
@@ -32,14 +34,14 @@ pub fn get_screensaver_dirs() -> Vec<PathBuf> {
         if !xdg_data.is_empty() {
             dirs.push(
                 PathBuf::from(&xdg_data)
-                    .join("idlescreen")
+                    .join("idle")
                     .join("screensavers"),
             );
             dirs.push(PathBuf::from(xdg_data).join("trance").join("screensavers"));
         }
     } else if let Ok(home) = std::env::var("HOME") {
         let home_path = PathBuf::from(home);
-        for brand in ["idlescreen", "trance"] {
+        for brand in ["idle", "trance"] {
             dirs.push(
                 home_path
                     .join(".local")

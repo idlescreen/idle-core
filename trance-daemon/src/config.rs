@@ -51,17 +51,17 @@ impl DaemonConfig {
         }
         let mut dirs = Vec::new();
         for base in bases {
-            dirs.push(base.join("idlescreen"));
+            dirs.push(base.join("idle"));
             dirs.push(base.join("trance"));
         }
         dirs
     }
 
-    /// Path used for **writes** and new installs (`~/.config/idlescreen/config.yaml`).
+    /// Path used for **writes** and new installs (`~/.config/idle/config.yaml`).
     pub fn get_config_path() -> Option<PathBuf> {
         Self::config_dir_candidates()
             .into_iter()
-            .find(|d| d.ends_with("idlescreen"))
+            .find(|d| d.ends_with("idle"))
             .map(|d| d.join("config.yaml"))
     }
 

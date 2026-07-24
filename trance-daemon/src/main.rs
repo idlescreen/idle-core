@@ -57,7 +57,7 @@ fn main() -> anyhow::Result<()> {
         if sub == "run-plugin" {
             if args.len() < 3 {
                 eprintln!(
-                    "error: missing saver name.\nusage: idlescreen-daemon run-plugin <saver>"
+                    "error: missing saver name.\nusage: idle-daemon run-plugin <saver>"
                 );
                 std::process::exit(1);
             }
@@ -86,7 +86,7 @@ fn main() -> anyhow::Result<()> {
         } else if sub == "run-ipc-runner" {
             if args.len() < 9 {
                 eprintln!(
-                    "error: missing arguments.\nusage: idlescreen-daemon run-ipc-runner <saver> <socket_path> <shm_name> <cols> <rows> <gpu_enabled> <render_scale>"
+                    "error: missing arguments.\nusage: idle-daemon run-ipc-runner <saver> <socket_path> <shm_name> <cols> <rows> <gpu_enabled> <render_scale>"
                 );
                 std::process::exit(1);
             }
@@ -125,13 +125,13 @@ fn main() -> anyhow::Result<()> {
             daemon::run_daemon()?;
         } else if sub == "--help" || sub == "-h" {
             println!(
-                "idlescreen-daemon — background idle monitoring service for trance
+                "idle-daemon — background idle monitoring service for trance
 
 usage:
-  idlescreen-daemon                     run the background idle daemon (default)
-  idlescreen-daemon daemon | --daemon   run the background idle daemon
-  idlescreen-daemon run-plugin <saver>  run a trusted screensaver plugin fullscreen
-  idlescreen-daemon --help | -h         show this help message"
+  idle-daemon                     run the background idle daemon (default)
+  idle-daemon daemon | --daemon   run the background idle daemon
+  idle-daemon run-plugin <saver>  run a trusted screensaver plugin fullscreen
+  idle-daemon --help | -h         show this help message"
             );
         } else {
             eprintln!("unknown argument: {}\ntry --help", sub);

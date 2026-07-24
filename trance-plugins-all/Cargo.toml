@@ -1,6 +1,6 @@
 [package]
 name = "trance-plugins-all"
-version = "2.0.1"
+version = "2.1.0"
 edition = "2024"
 description = "Meta package that hard-depends on all official IdleScreen saver plugins"
 license = "Apache-2.0"
@@ -9,24 +9,24 @@ license = "Apache-2.0"
 path = "src/lib.rs"
 crate-type = ["rlib"]
 
-# All official savers — hard Depends so `idlescreen-savers` (and thus
-# `app-cosmic`) always install every plugin, not merely recommend them.
+# All official savers — hard Depends so `idle-savers` (and thus
+# `idle-cosmic`) always install every plugin, not merely recommend them.
 [package.metadata.deb]
-name = "idlescreen-savers"
+name = "idle-savers"
 changelog = "debian/changelog"
 copyright = "2026 IdleScreen"
 maintainer = "IdleScreen <jerydleuck@gmail.com>"
-extended-description = "Installs every official IdleScreen screensaver plugin (saver-*). Required by the app-cosmic product package."
-depends = "idlescreen, saver-beams, saver-bursts, saver-chaos, saver-cosmos, saver-glyphs, saver-gnats, saver-radar, saver-storm, saver-hearth, saver-ripple"
-provides = "trance-plugins-all"
-replaces = "trance-plugins-all"
+extended-description = "Installs every official IdleScreen screensaver plugin (saver-*). Required by the idle-cosmic product package."
+depends = "idle, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-radar, idle-saver-storm, idle-saver-hearth, idle-saver-ripple"
+provides = "idlescreen-savers, trance-plugins-all"
+replaces = "idlescreen-savers, trance-plugins-all"
 conflicts = "trance-plugins-all (<< 2.0.0)"
 section = "utils"
 priority = "optional"
 assets = []
 
 [package.metadata.generate-rpm]
-name = "idlescreen-savers"
+name = "idle-savers"
 release = "1"
 arch = "noarch"
 summary = "All official IdleScreen savers"
@@ -35,20 +35,23 @@ license = "Apache-2.0"
 assets = []
 
 [package.metadata.generate-rpm.requires]
-idlescreen = "*"
-saver-beams = "*"
-saver-bursts = "*"
-saver-chaos = "*"
-saver-cosmos = "*"
-saver-glyphs = "*"
-saver-gnats = "*"
-saver-radar = "*"
-saver-storm = "*"
-saver-hearth = "*"
-saver-ripple = "*"
+idle = "*"
+idle-saver-beams = "*"
+idle-saver-bursts = "*"
+idle-saver-chaos = "*"
+idle-saver-cosmos = "*"
+idle-saver-glyphs = "*"
+idle-saver-gnats = "*"
+idle-saver-radar = "*"
+idle-saver-storm = "*"
+idle-saver-hearth = "*"
+idle-saver-ripple = "*"
 
 [package.metadata.generate-rpm.provides]
+idle-savers = "*"
+idlescreen-savers = "*"
 trance-plugins-all = "*"
 
 [package.metadata.generate-rpm.obsoletes]
+idlescreen-savers = "*"
 trance-plugins-all = "*"

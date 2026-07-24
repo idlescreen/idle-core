@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-//! Hot-reload `~/.config/idlescreen/config.yaml` (or legacy `trance`) without Tokio.
+//! Hot-reload `~/.config/idle/config.yaml` (or legacy `trance`) without Tokio.
 //!
 //! The daemon main path is not Tokio-driven; only the D-Bus thread owns a
 //! runtime. Keep the notify watcher on a plain OS thread so startup cannot

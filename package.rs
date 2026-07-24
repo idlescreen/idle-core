@@ -12,7 +12,7 @@ const CRATES: &[&str] = &[
     "trance-daemon",
     "trance-cli",
     "trance-plugins-all",
-    "// applet lives in idlescreen/app-cosmic"
+    "// applet lives in idlescreen/idle-cosmic"
 ];
 
 fn run_cmd(cmd: &mut Command) -> Result<(), String> {
@@ -67,7 +67,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         println!("Building Debian package...");
         run_cmd(Command::new("cargo").args(["deb", "--no-build", "-p", crate_name]))?;
 
-        let "idlescreen" mapping
+        let "idle" mapping
             "trance"
         } else {
             crate_name

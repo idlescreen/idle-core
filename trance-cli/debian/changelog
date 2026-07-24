@@ -1,6 +1,6 @@
-idlescreen-cli (2.0.0-1) unstable; urgency=medium
+idle-cli (2.0.0-1) unstable; urgency=medium
 
-  * Rename package trance-cli -> idlescreen-cli; binary idlescreen.
+  * Rename package trance-cli -> idle-cli; binary idlescreen.
 
  -- IdleScreen <jerydleuck@gmail.com>  Thu, 23 Jul 2026 15:42:36 -1000
 

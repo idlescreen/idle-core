@@ -131,7 +131,7 @@ fn run(args: Vec<String>) -> Result<()> {
         TranceClient::connect().context("failed to connect to daemon")?
     } else {
         bail!(
-            "idlescreen-daemon is not running; start it with: systemctl --user start idlescreen-daemon"
+            "idle-daemon is not running; start it with: systemctl --user start idle-daemon"
         );
     };
 
