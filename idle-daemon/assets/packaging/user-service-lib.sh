@@ -79,7 +79,7 @@ try_reload_user_units() {
     fi
 }
 
-try_stop_trance() {
+try_stop_idle() {
     _uid="$1"
     _user="$2"
     _user_systemctl "$_uid" "$_user" stop idle-daemon.service || true
@@ -87,17 +87,17 @@ try_stop_trance() {
 
 # Apply upgrade: load new binary without the user running systemctl.
 # Enabled → restart (or start if dead). Active-but-not-enabled → try-restart.
-try_restart_trance() {
+try_restart_idle() {
     _uid="$1"
     _user="$2"
     _user_systemctl "$_uid" "$_user" reset-failed idle-daemon.service || true
     if _user_is_enabled "$_uid" "$_user"; then
-        echo "trance: applying upgrade for ${_user} (user service)"
+        echo "idle: applying upgrade for ${_user} (user service)"
         _user_systemctl "$_uid" "$_user" restart idle-daemon.service || true
         return 0
     fi
     if _user_is_active "$_uid" "$_user"; then
-        echo "trance: applying upgrade for ${_user} (running unit)"
+        echo "idle: applying upgrade for ${_user} (running unit)"
         _user_systemctl "$_uid" "$_user" try-restart idle-daemon.service || true
     fi
 }
@@ -107,6 +107,6 @@ print_user_hint() {
     echo "  Note: idle-daemon is a *user* systemd service."
     echo "  If the screensaver is not running after install, as your desktop user:"
     echo "    systemctl --user enable --now idle-daemon"
-    echo "  or:  trance doctor --fix"
+    echo "  or:  idle doctor --fix"
     echo ""
 }

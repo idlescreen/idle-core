@@ -63,21 +63,21 @@ else
             _user_systemctl "$1" "$2" daemon-reload || true
         fi
     }
-    try_restart_trance() {
+    try_restart_idle() {
         _user_systemctl "$1" "$2" reset-failed idle-daemon.service || true
         if _user_is_enabled "$1" "$2"; then
-            echo "trance: applying upgrade for $2 (user service)"
+            echo "idle: applying upgrade for $2 (user service)"
             _user_systemctl "$1" "$2" restart idle-daemon.service || true
             return 0
         fi
         if _user_is_active "$1" "$2"; then
-            echo "trance: applying upgrade for $2 (running unit)"
+            echo "idle: applying upgrade for $2 (running unit)"
             _user_systemctl "$1" "$2" try-restart idle-daemon.service || true
         fi
     }
     print_user_hint() {
         echo "  First-time: systemctl --user enable --now idle-daemon"
-        echo "  or: trance doctor --fix"
+        echo "  or: idle doctor --fix"
     }
 fi
 
@@ -85,13 +85,13 @@ fi
 rm -f /etc/xdg/autostart/idle-daemon.desktop 2>/dev/null || true
 
 for_each_user_session try_reload_user_units
-for_each_user_session try_restart_trance
+for_each_user_session try_restart_idle
 
 # Fresh install ($1 == 1): print setup hint. Upgrades stay quiet.
 if [ "${1:-1}" -eq 1 ]; then
     echo ""
     print_user_hint
-    echo "  COSMIC panel UI (optional): dnf install trance-applet"
+    echo "  COSMIC panel UI (optional): dnf install idle-cosmic"
     echo ""
 fi
 

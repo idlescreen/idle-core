@@ -20,14 +20,14 @@ pub fn initialize_runtime(
         .idle_timeout_mins;
     let idle_monitor = IdleMonitor::new(idle_timeout).ok_or_else(|| {
         anyhow!(
-            "DEGRADED: Wayland idle monitoring unavailable (need ext-idle-notify-v1). IdleScreen is a compositor client — this DE/compositor does not expose the idle protocol. See docs/BOUNDARIES.md. Run: trance doctor --json"
+            "DEGRADED: Wayland idle monitoring unavailable (need ext-idle-notify-v1). IdleScreen is a compositor client — this DE/compositor does not expose the idle protocol. See docs/BOUNDARIES.md. Run: idle doctor --json"
         )
     })?;
     tracing::info!("using native Wayland idle notifier");
 
     if !idle_runner::cell_renderer::font_available() {
         return Err(anyhow!(
-            "DEGRADED: no monospace font found; install fonts-dejavu-core (or equivalent) before running trance. Run: trance doctor"
+            "DEGRADED: no monospace font found; install fonts-dejavu-core (or equivalent) before running idle. Run: idle doctor"
         ));
     }
     if let Some(path) = idle_runner::cell_renderer::resolve_font_path() {
@@ -36,7 +36,7 @@ pub fn initialize_runtime(
 
     let overlay_presenter = OverlayPresenter::new().map(Arc::new).ok_or_else(|| {
         anyhow!(
-            "DEGRADED: Wayland layer-shell presenter unavailable (need zwlr_layer_shell_v1). IdleScreen presents as a guest overlay — compositors without layer-shell cannot host it (e.g. some GNOME configurations). See docs/BOUNDARIES.md. Run: trance doctor --json"
+            "DEGRADED: Wayland layer-shell presenter unavailable (need zwlr_layer_shell_v1). IdleScreen presents as a guest overlay — compositors without layer-shell cannot host it (e.g. some GNOME configurations). See docs/BOUNDARIES.md. Run: idle doctor --json"
         )
     })?;
     tracing::info!("using Wayland layer-shell presenter");
